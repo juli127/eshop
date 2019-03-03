@@ -44,7 +44,7 @@
         var userid = ${sessionScope.user.id == null? 0: sessionScope.user.id};
         alert('user.id=' + userid);
         if (userid == null || userid.equals("")) {
-            alert("Войдите в систему или зарегистрируйтесь, чтобы купить товар!");
+            alert("Login or register, please, to buy something!");
         } else {
             alert("Покупаем товар!");
             $.ajax({
@@ -55,7 +55,7 @@
                     parseRespose(response);
                 }
             });
-            alert(${sessionScope.user.name} +", товар был добавлен в Вашу корзину");
+            alert(${sessionScope.user.name} +", this item was added to your cart");
         }
     }
 

@@ -34,8 +34,8 @@ public class OrderServlet extends HttpServlet {
         CartDao cartDao = daoFactory.getCartDao();
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            session.setAttribute("message", "<a href='login'>Войдите в систему</a>, чтобы просмотреть свою корзину. <br> " +
-                    "Или <a href='registration'>зарегистрируйтесь</a>");
+            session.setAttribute("message", "<a href='login'>Login</a> to see your cart. <br> " +
+                    "Or <a href='registration'>register</a>");
 
         }
         else {
