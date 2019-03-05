@@ -63,12 +63,12 @@ public class RegistrationServlet extends HttpServlet {
             if (session.getAttribute("user") != null) {
                 logger.debug("RegisrtServlet: some user is already logged in");
                 User currentUser = (User) session.getAttribute("user");
-                String currentLogin = (currentUser).getLogin();
+                String currentLogin = currentUser.getLogin();
                 if (currentLogin.equals(login)) {
-                    logger.debug("RegisrtServlet: logged in user tries to registere. Just forward him to page with products");
-                    message.append("<br><b><font color='green'><center>Hi, " + currentUser.getName() + ". <br>You are registered already.</font><b>");
+                    logger.debug("RegisrtServlet: logged-in user tries to register. Just forward him to page with products");
+                    message.append("<br><b><font color='green'><center>Hi, " + currentUser.getName() + ". <br>You have registered already.</font><b>");
                 } else { // we should logout and login as the new user
-                    logger.debug("RegisrtServlet: try to register when user is logged in. Then logout and forward to registartion.jsp");
+                    logger.debug("RegisrtServlet: try to register the new user when the previous one is logged in. Logout and forward to registartion.jsp");
                     session.invalidate();
                     session = request.getSession();
                     needRegistration = true;
@@ -102,12 +102,11 @@ public class RegistrationServlet extends HttpServlet {
                     newUser.setAddress(address);
                     newUser.setComment(comment);
                     if (userDao.createUser(newUser)) {
-                        message.append("<br><font color='green'><center>Hi, " + name + "! <br>You are registered now.</font>");
+                        message.append("<br><font color='green'><center>Hi, " + name + "! <br>You have been registered.</font>");
                         session.setAttribute("user", newUser);
-                        session.setAttribute("userName", newUser.getName());
                     } else {
                         needRegistration = true;
-                        message.append("<br><font color='red'><center>User wan't registered because of DB problems</font>");
+                        message.append("<br><font color='red'><center>User wan't registered because of DB problems!</font>");
                     }
                     daoFactory.deleteUserDao(userDao);
                 } else {
