@@ -35,24 +35,14 @@ public class CartServlet extends HttpServlet {
         HttpSession session = request.getSession();
         boolean needRefresh = false;
 
-        if (session.getAttribute("user") == null) {
-            logger.debug("CartServlet: Current user == null ");
-            session.setAttribute("message", "<a href='login'>Login</a> to see your cart. Or <a href='registration'>Register.</a>");
-
-            // be sure that all user's corresponding values are null, too
-            session.setAttribute("cartSize", null);
-            session.setAttribute("userName", null);
-            session.setAttribute("totalSum", null);
-            session.setAttribute("productsInCart", null);
-        }
-        else {
+        if (session.getAttribute("user") != null) {
             User currentUser = (User) session.getAttribute("user");
-            CartDao cartDao = daoFactory.getCartDao();
-
             logger.debug("CartServlet: Current user: " + currentUser.getName());
             int userId = currentUser.getId();
 
             //////////////////// CHANGE CART /////////////////////////////////////
+            CartDao cartDao = daoFactory.getCartDao();
+            // got this info from updateCart.js (TODO: parse it as JSON format)
             String addProducts = request.getParameter("addPurchase");
             if (addProducts != null) {
                 logger.debug("CatServlet: GOT PARAMETER addPurchase: === " + addProducts);
@@ -66,6 +56,7 @@ public class CartServlet extends HttpServlet {
                 needRefresh = true;
             }
 
+            // got this info from updateCart.js (TODO: parse it as JSON format
             String rmProducts = request.getParameter("removePurchase");
             if (rmProducts != null) {
                 logger.debug("CartServlet: GOT PARAMETER removePurchase: === " + rmProducts);

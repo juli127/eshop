@@ -49,7 +49,7 @@ public class ProductServlet extends HttpServlet {
 //        products.forEach(e -> System.out.println(e));
         daoFactory.deleteProductDao(productDao);
 
-        // be sure that when enter on the main application page (products.jsp), user's info is full and correct
+        // be sure that when we enter on the main application page (products.jsp), user's info is full and correct
         if (session.getAttribute("user") == null) {
             session.setAttribute("cartSize", null);
             session.setAttribute("userName", null);

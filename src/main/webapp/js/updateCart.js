@@ -1,16 +1,3 @@
-function check() {
-    alert('check was pressed');
-    $(document).ready(function(){
-            $.post("demo_test_post.asp",
-                {
-                    name: "Donald Duck",
-                    city: "Duckburg"
-                },
-                function(data,status){
-                    alert("Data: " + data + "\nStatus: " + status);
-                });
-    });
-}
 
 // scripts for 'product' page
 function plus(productId) {
@@ -58,6 +45,7 @@ function deleteFromCart(productId) {
     var qnt = +elem.innerHTML;
     if (elem.innerHTML > 0) {
         elem.innerHTML = qnt - 1;
+        // TODO: change request to JSON format
         $.ajax({
             type: "POST",
             url: "./cart",
@@ -74,6 +62,7 @@ function addToCart(productId) {
     var elem = document.getElementById('q' + productId);
     var qnt = +elem.innerHTML + 1;
     elem.innerHTML = qnt;
+    // TODO: change request to JSON format
     $.ajax({
         type: "POST",
         url: "./cart",
@@ -85,6 +74,7 @@ function addToCart(productId) {
 }
 
 function parseRespose(response) {
+    // TODO: parse responce as JSON format (got it from CartServlet.java)
     var respData = response.toString().split("<br>");
     for (var i = 0; i < respData.length; i++) {
         if (respData[i].startsWith("header:")) {
@@ -112,4 +102,19 @@ function makeOrder(userId) {
             alert('Заказ оформлен');
         }
     });
+}
+
+// just for test
+function check() {
+alert('check was pressed');
+$(document).ready(function(){
+    $.post("demo_test_post.asp",
+        {
+            name: "Donald Duck",
+            city: "Duckburg"
+        },
+        function(data,status){
+            alert("Data: " + data + "\nStatus: " + status);
+        });
+});
 }
