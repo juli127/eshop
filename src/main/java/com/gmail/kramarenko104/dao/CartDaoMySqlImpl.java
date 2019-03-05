@@ -25,21 +25,6 @@ public class CartDaoMySqlImpl implements CartDao {
         this.conn = conn;
     }
 
-//    @Override
-//    public void createCart(int userId) {
-//        try (PreparedStatement pst = conn.prepareStatement(ADD_TO_CART)) {
-//            conn.setAutoCommit(false);
-//            pst.setInt(1, userId);
-//            pst.setInt(2, 0);
-//            pst.setInt(2, 0);
-//            pst.execute();
-//            conn.commit();
-//            conn.setAutoCommit(true);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Override
     public void addProduct(int userId, int productId, int addQuantity) {
         logger.debug("++++CartDao.addProduct: for userId: " + userId + ", productId: " + productId + ", quantity: " + addQuantity);
@@ -170,28 +155,6 @@ public class CartDaoMySqlImpl implements CartDao {
             closeResultSet(rs);
         }
         return productsMap;
-    }
-
-    @Override
-    public Cart getCart(int userId) {
-        Cart cart = new Cart();
-        Map<Integer, Integer> products = new HashMap<>();
-        ResultSet rs = null;
-        try (PreparedStatement pst = conn.prepareStatement(GET_PRODUCTS_BY_USERID)) {
-            pst.setInt(1, userId);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                products.put(rs.getInt("productId"), rs.getInt("quantity"));
-            }
-            cart.setUserId(userId);
-            cart.setProducts(products);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeResultSet(rs);
-        }
-        logger.debug("CartDao.getCart: " + cart);
-        return cart;
     }
 
     private void closeResultSet(ResultSet rs) {

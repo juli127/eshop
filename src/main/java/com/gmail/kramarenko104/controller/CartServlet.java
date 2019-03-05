@@ -35,18 +35,18 @@ public class CartServlet extends HttpServlet {
         HttpSession session = request.getSession();
         boolean needRefresh = false;
 
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
+        if (session.getAttribute("user") == null) {
             logger.debug("CartServlet: Current user == null ");
             session.setAttribute("message", "<a href='login'>Login</a> to see your cart. Or <a href='registration'>Register.</a>");
 
             // be sure that all user's corresponding values are null, too
             session.setAttribute("cartSize", null);
             session.setAttribute("userName", null);
-            session.setAttribute("totalSum", 0);
+            session.setAttribute("totalSum", null);
             session.setAttribute("productsInCart", null);
         }
         else {
+            User currentUser = (User) session.getAttribute("user");
             CartDao cartDao = daoFactory.getCartDao();
 
             logger.debug("CartServlet: Current user: " + currentUser.getName());
@@ -82,13 +82,6 @@ public class CartServlet extends HttpServlet {
             ///////////////// REFRESH CART's characteristics if refresh need ////////////////////////////////////////
             logger.debug("CartServlet: needRefresh ==  "+ needRefresh);
 
-            if (session.getAttribute("cartSize") == null || needRefresh) {
-                Cart cart = cartDao.getCart(currentUser.getId());
-                int cartSize = cart.getProducts().values().stream().reduce(0, (a, b) -> a + b);
-                session.setAttribute("cartSize", cartSize);
-                logger.debug("CartServlet: Refresh  cart size==  "+ cartSize);
-            }
-
             Map<Product, Integer> productsInCart = null;
             logger.debug("CartServlet: productsInCart attribute is null? " +
                     (session.getAttribute("productsInCart") == null));
@@ -96,7 +89,12 @@ public class CartServlet extends HttpServlet {
                 productsInCart = cartDao.getAllProducts(userId);
                 session.setAttribute("productsInCart", productsInCart);
                 //logger.debug("CartServlet.doGet: Refresh  productsInCart==  "+ productsInCart);
-                //session.setAttribute("productsIds", productsInCart.keySet().toArray());
+            }
+
+            if (session.getAttribute("cartSize") == null || needRefresh) {
+                int cartSize = productsInCart.entrySet().stream().map(e -> e.getValue()).reduce(0, (a, b) -> a + b);
+                session.setAttribute("cartSize", cartSize);
+                logger.debug("CartServlet: Refresh  cart size==  "+ cartSize);
             }
 
             if (session.getAttribute("totalSum") == null  || needRefresh) {
@@ -116,10 +114,8 @@ public class CartServlet extends HttpServlet {
         logger.debug("CartServlet: needRefresh ==  "+ needRefresh);
         logger.debug("CartServlet.doGet: >>>>>> where session.getAttribute(cartSize)= " + session.getAttribute("cartSize"));
         logger.debug("CartServlet.doGet: >>>>>> where session.getAttribute(totalSum)= " + session.getAttribute("totalSum"));
-
         logger.debug("CartServlet.doGet: >>>>>> call forward to cart.jsp........... ");
         request.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(request, response);
-
         logger.debug("CartServlet.doGet: -------exit-------------------- ");
     }
 

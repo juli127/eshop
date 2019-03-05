@@ -34,15 +34,19 @@ public class ProductDaoMySqlImpl implements ProductDao {
     }
 
     @Override
-    public Product getProduct(int id) {
+    public Product getProduct(int productId) {
         Product product = new Product();
-        try (Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(GET_PRODUCT_BY_ID)) {
+        ResultSet rs = null;
+        try (PreparedStatement ps = conn.prepareStatement(GET_PRODUCT_BY_ID)) {
+             ps.setInt(1, productId);
+             rs = ps.executeQuery();
             while (rs.next()) {
                 fillProduct(rs, product);
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
         }
         return product;
     }
@@ -57,12 +61,12 @@ public class ProductDaoMySqlImpl implements ProductDao {
     }
 
     @Override
-    public Product editProduct(int id, Product user) {
+    public Product editProduct(int productId, Product user) {
         return null;
     }
 
     @Override
-    public boolean deleteProduct(int id) {
+    public boolean deleteProduct(int productId) {
         return false;
     }
 
