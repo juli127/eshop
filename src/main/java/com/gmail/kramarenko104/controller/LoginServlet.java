@@ -136,8 +136,7 @@ public class LoginServlet extends HttpServlet {
         }
         else { // login was unsuccessful, try again, go to login.jsp
             logger.debug("LoginServlet: login was unsuccessful, try again, go to login.jsp");
-            RequestDispatcher rd = req.getRequestDispatcher(viewToGo);
-            rd.forward(req, resp);
+            req.getRequestDispatcher(viewToGo).forward(req, resp);
         }
         logger.debug("LoginServlet: =================exit========================");
     }

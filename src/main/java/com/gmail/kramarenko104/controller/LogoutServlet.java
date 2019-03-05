@@ -24,8 +24,6 @@ public class LogoutServlet extends HttpServlet {
         session.setAttribute("showLoginForm", true);
         session.setAttribute("message", "");
         session.setAttribute("attempt", 0);
-
-        RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/view/products.jsp");
-        rd.forward(request, response);
+        request.getRequestDispatcher("WEB-INF/view/products.jsp").forward(request, response);
     }
 }

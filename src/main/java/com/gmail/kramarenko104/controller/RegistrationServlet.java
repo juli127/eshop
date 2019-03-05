@@ -116,8 +116,7 @@ public class RegistrationServlet extends HttpServlet {
             }
 
             if (needRegistration){
-                RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/registartion.jsp");
-                rd.forward(request, response);
+                request.getRequestDispatcher("WEB-INF/views/registartion.jsp").forward(request, response);
             } else {
                 response.sendRedirect("WEB-INF/views/products.jsp");
             }

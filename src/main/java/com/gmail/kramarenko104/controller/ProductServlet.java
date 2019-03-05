@@ -88,8 +88,7 @@ public class ProductServlet extends HttpServlet {
             daoFactory.deleteCartDao(cartDao);
         }
 
-        RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/view/products.jsp");
-        rd.forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/view/products.jsp").forward(req, resp);
     }
 
     @Override
