@@ -81,7 +81,7 @@ public class LoginServlet extends HttpServlet {
                             attempt = 0;
                             showLoginForm = false;
                             session.setAttribute("user", currentUser);
-                            logger.debug("LoginServlet: user.getName() = " + currentUser.getName());
+                            logger.debug("LoginServlet: Existing user " + currentUser.getName() + " was logged in");
                             if ((int)session.getAttribute("cartSize") > 0) {
                                 viewToGo = "./cart";
                             }
@@ -95,7 +95,7 @@ public class LoginServlet extends HttpServlet {
                                 }
                                 waitTime = WAIT_SECONDS - (System.currentTimeMillis() - startTime) / 1000;
                                 if (waitTime > 0) {
-                                    msgText.append("<br><font size=4 color='red'><b> Форма будет снова доступна через " + waitTime + " секунд</b></font>");
+                                    msgText.append("<br><font size=4 color='red'><b> Attempts' limit is exceeded. Login form will be available in " + waitTime + " seconds</b></font>");
                                     showLoginForm = false;
                                 }
                                 else {
@@ -104,15 +104,15 @@ public class LoginServlet extends HttpServlet {
                                 }
                             }
                             else if (attempt >= 0) {
-                                msgText.append("<b><font size=4 color='red'>Неправильный пароль, попробуйте еще раз! (попытка #" + attempt + ")</font>");
+                                msgText.append("<b><font size=4 color='red'>Wrong password, try again! (attempt #" + attempt + ")</font>");
                             }
                         }
                     }
                     else {
                         attempt = 0;
                         showLoginForm = false;
-                        msgText.append("<br><b><font size=3 color='green'><center>Пользователь с таким логином еще не был зарегистрирован.</b>");
-                        msgText.append("<br><b>Вы можете <a href='registration'>зарегестрироваться по ссылке</a></b></font>");
+                        msgText.append("<br><b><font size=3 color='green'><center>You wasn't registered yet.</b>");
+                        msgText.append("<br><b>You need <a href='registration'>register by referrence </a> before shopping.</b></font>");
                     }
                 }
                 else {
