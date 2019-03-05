@@ -7,14 +7,12 @@ import java.util.Map;
 
 public interface CartDao {
 
+    Cart getCart(int userId);
+
     void addProduct(int userId, int productId, int quantity);
 
     void removeProduct(int userId, int productId, int quantity);
 
-    Map<Product, Integer> getAllProducts(int userId);
-
     void deleteCart(int userId);
-
-
 
 }

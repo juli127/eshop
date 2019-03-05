@@ -1,6 +1,5 @@
 package com.gmail.kramarenko104.controller;
 
-import com.gmail.kramarenko104.dao.CartDao;
 import com.gmail.kramarenko104.dao.UserDao;
 import com.gmail.kramarenko104.dao.UserDaoMySqlImpl;
 import com.gmail.kramarenko104.factoryDao.DaoFactory;
@@ -35,7 +34,6 @@ public class LoginServlet extends HttpServlet {
         logger.debug("LoginServlet: =================enter========================");
         boolean showLoginForm = true;
 
-        CartDao cartDao = daoFactory.getCartDao();
         UserDao userDao = daoFactory.getUserDao();
 
         String viewToGo = "WEB-INF/view/login.jsp";
@@ -45,7 +43,6 @@ public class LoginServlet extends HttpServlet {
 
         if (session != null) {
             logger.debug("LoginServlet: session != null");
-            session.setAttribute("session", session);
             attempt = (session.getAttribute("attempt") == null) ? 0 : (int) session.getAttribute("attempt");
             User currentUser;
 
@@ -54,7 +51,7 @@ public class LoginServlet extends HttpServlet {
                 currentUser = (User) session.getAttribute("user");
                 logger.debug("LoginServlet: user already logged in: " + currentUser);
                 showLoginForm = false;
-                if ((int)session.getAttribute("cartSize") > 0) {
+                if (session.getAttribute("userCart") != null) {
                     viewToGo = "./cart";
                 }
             } // not logged in yet
@@ -126,7 +123,6 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("message", msgText.toString());
         session.setAttribute("attempt", attempt);
 
-        daoFactory.deleteCartDao(cartDao);
         daoFactory.deleteUserDao(userDao);
 
         // login was successful, redirect to cart controller

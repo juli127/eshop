@@ -73,39 +73,17 @@ public class CartServlet extends HttpServlet {
             ///////////////// REFRESH CART's characteristics if refresh need ////////////////////////////////////////
             logger.debug("CartServlet: needRefresh ==  "+ needRefresh);
 
-            Map<Product, Integer> productsInCart = null;
-            logger.debug("CartServlet: productsInCart attribute is null? " +
-                    (session.getAttribute("productsInCart") == null));
-            if (session.getAttribute("productsInCart") == null || needRefresh) {
-                productsInCart = cartDao.getAllProducts(userId);
-                session.setAttribute("productsInCart", productsInCart);
-                //logger.debug("CartServlet.doGet: Refresh  productsInCart==  "+ productsInCart);
-            }
-
-            if (session.getAttribute("cartSize") == null || needRefresh) {
-                int cartSize = productsInCart.entrySet().stream().map(e -> e.getValue()).reduce(0, (a, b) -> a + b);
-                session.setAttribute("cartSize", cartSize);
-                logger.debug("CartServlet: Refresh  cart size==  "+ cartSize);
-            }
-
-            if (session.getAttribute("totalSum") == null  || needRefresh) {
-                int totalSum = 0;
-                for (Map.Entry entry: productsInCart.entrySet()){
-                    totalSum += (int)entry.getValue() * ((Product)entry.getKey()).getPrice();
+            Cart userCart = null;
+            if (session.getAttribute("userCart") == null || needRefresh) {
+                userCart = cartDao.getCart(userId);
+                if (userCart == null) {
+                    userCart = new Cart(userId);
                 }
-                session.setAttribute("totalSum", totalSum);
-                logger.debug("CartServlet.doGet: >>>>>> Refresh  totalSum ==  "+ totalSum);
+                session.setAttribute("userCart", userCart);
             }
-
-            session.setAttribute("user", currentUser);
-
             daoFactory.deleteCartDao(cartDao);
         }
 
-        logger.debug("CartServlet: needRefresh ==  "+ needRefresh);
-        logger.debug("CartServlet.doGet: >>>>>> where session.getAttribute(cartSize)= " + session.getAttribute("cartSize"));
-        logger.debug("CartServlet.doGet: >>>>>> where session.getAttribute(totalSum)= " + session.getAttribute("totalSum"));
-        logger.debug("CartServlet.doGet: >>>>>> call forward to cart.jsp........... ");
         request.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(request, response);
         logger.debug("CartServlet.doGet: -------exit-------------------- ");
     }

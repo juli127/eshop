@@ -2,18 +2,23 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page isELIgnored="false" %>
 <c:set var="username" value="${sessionScope.user.getName()}"/>
-<span userId='${sessionScope.user.id}'></span>
+<c:set var="cartSize" value ="${sessionScope.userCart.getProducts().entrySet().stream().map(e -> e.getValue()).reduce(0, (a, b) -> a + b)}"/>
+
+<c:set var="totalSum" value ="0" />
+<c:forEach items="${sessionScope.userCart.getProducts().entrySet()}" var="entry">
+     ${totalSum += entry.getValue() * (entry.getKey()).getPrice()};
+</c:forEach>
+
+<span userId='${sessionScope.user.getId()}'></span>
 <br><br>
 <%--<br>header: session: ${session}--%>
 <br>header: sessionScope.userId: ${sessionScope.user.id}
 <br>header: sessionScope.user: ${sessionScope.user}
-<br>header: sessionScope.user.getName(): ${username}
-<br>header: sessionScope.cartSize: ${sessionScope.cartSize}
-<br>header: sessionScope.totalSum: ${sessionScope.totalSum}
+<br>header: username: ${username}
+<br>header: cartSize: ${cartSize}
+<br>header: totalSum: ${totalSum}
 <br>header: sessionScope.message: ${sessionScope.message}
 <br>header: sessionScope.regErrors: ${sessionScope.regErrors}
-<br>header: sessionScope.productsInCart: ${sessionScope.productsInCart}
-
 
 <c:choose>
     <c:when test="${username != null}">
@@ -66,7 +71,7 @@
 
     <c:if test="${username != null}">
     <div id="autoriz">
-        ${greeting} your cart has <span id="goodsCount">${sessionScope.cartSize==null?0:sessionScope.cartSize}</span></> items
+        ${greeting} your cart has <span id="goodsCount">${cartSize==null?0:cartSize}</span></> items
     </div>
     </c:if>
 

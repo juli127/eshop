@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import com.gmail.kramarenko104.dao.CartDao;
 import com.gmail.kramarenko104.dao.ProductDao;
 import com.gmail.kramarenko104.factoryDao.DaoFactory;
+import com.gmail.kramarenko104.model.Cart;
 import com.gmail.kramarenko104.model.User;
 import org.apache.log4j.Logger;
 import com.gmail.kramarenko104.model.Product;
@@ -51,43 +52,23 @@ public class ProductServlet extends HttpServlet {
 
         // be sure that when we enter on the main application page (products.jsp), user's info is full and correct
         if (session.getAttribute("user") == null) {
-            session.setAttribute("cartSize", null);
-            session.setAttribute("userName", null);
-            session.setAttribute("totalSum", null);
-            session.setAttribute("productsInCart", null);
+            session.setAttribute("userCart", null);
         } else {
             User currentUser = (User) session.getAttribute("user");
-            CartDao cartDao = daoFactory.getCartDao();
-
             logger.debug("ProductServlet: Current user: " + currentUser.getName());
-            int userId = currentUser.getId();
 
-            Map<Product, Integer> productsInCart = null;
-            if (session.getAttribute("productsInCart") == null) {
-                productsInCart = cartDao.getAllProducts(userId);
-                session.setAttribute("productsInCart", productsInCart);
-                //logger.debug("CartServlet.doGet: Refresh  productsInCart==  "+ productsInCart);
-            }
-
-            if (session.getAttribute("cartSize") == null) {
-                int cartSize = productsInCart.entrySet().stream().map(e -> e.getValue()).reduce(0, (a, b) -> a + b);
-                session.setAttribute("cartSize", cartSize);
-                logger.debug("ProductServlet: cart size==  "+ cartSize);
-            }
-
-            if (session.getAttribute("totalSum") == null) {
-                int totalSum = 0;
-                for (Map.Entry entry: productsInCart.entrySet()){
-                    totalSum += (int)entry.getValue() * ((Product)entry.getKey()).getPrice();
+            Cart userCart = null;
+            if (session.getAttribute("userCart") == null) {
+                int userId = currentUser.getId();
+                CartDao cartDao = daoFactory.getCartDao();
+                userCart = cartDao.getCart(userId);
+                if (userCart == null) {
+                    userCart = new Cart(userId);
                 }
-                session.setAttribute("totalSum", totalSum);
-                logger.debug("ProductServlet.doGet: totalSum ==  "+ totalSum);
+                session.setAttribute("userCart", userCart);
+                daoFactory.deleteCartDao(cartDao);
             }
-//            session.setAttribute("user", currentUser);
-
-            daoFactory.deleteCartDao(cartDao);
         }
-
         req.getRequestDispatcher("/WEB-INF/view/products.jsp").forward(req, resp);
     }
 

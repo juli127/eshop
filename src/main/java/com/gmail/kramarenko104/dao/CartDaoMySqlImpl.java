@@ -26,6 +26,35 @@ public class CartDaoMySqlImpl implements CartDao {
     }
 
     @Override
+    public Cart getCart(int userId) {
+        Map<Product, Integer> productsMap = new HashMap<>();
+        ResultSet rs = null;
+        Cart cart = null;
+        try (PreparedStatement pst = conn.prepareStatement(GET_ALL_PRODUCTS_FROM_CART)) {
+            pst.setInt(1, userId);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setId(rs.getInt("id"));
+                product.setName(rs.getString("name"));
+                product.setCategory(rs.getInt("category"));
+                product.setDescription(rs.getString("description"));
+                product.setPrice(rs.getInt("price"));
+                product.setImage(rs.getString("image"));
+                rs.getInt("quantity");
+                productsMap.put(product, rs.getInt("quantity"));
+            }
+            cart = new Cart();
+            cart.setProducts(productsMap);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
+        }
+        return cart;
+    }
+
+    @Override
     public void addProduct(int userId, int productId, int addQuantity) {
         logger.debug("++++CartDao.addProduct: for userId: " + userId + ", productId: " + productId + ", quantity: " + addQuantity);
         int dbQuantity = getProductQuantity(userId, productId);
@@ -129,32 +158,6 @@ public class CartDaoMySqlImpl implements CartDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public Map<Product, Integer> getAllProducts(int userId) {
-        Map<Product, Integer> productsMap = new HashMap<>();
-        ResultSet rs = null;
-        try (PreparedStatement pst = conn.prepareStatement(GET_ALL_PRODUCTS_FROM_CART)) {
-            pst.setInt(1, userId);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                Product product = new Product();
-                product.setId(rs.getInt("id"));
-                product.setName(rs.getString("name"));
-                product.setCategory(rs.getInt("category"));
-                product.setDescription(rs.getString("description"));
-                product.setPrice(rs.getInt("price"));
-                product.setImage(rs.getString("image"));
-                rs.getInt("quantity");
-                productsMap.put(product, rs.getInt("quantity"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeResultSet(rs);
-        }
-        return productsMap;
     }
 
     private void closeResultSet(ResultSet rs) {

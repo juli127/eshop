@@ -2,6 +2,7 @@ package com.gmail.kramarenko104.controller;
 
 import com.gmail.kramarenko104.dao.UserDao;
 import com.gmail.kramarenko104.factoryDao.DaoFactory;
+import com.gmail.kramarenko104.model.Cart;
 import com.gmail.kramarenko104.model.User;
 import org.apache.log4j.Logger;
 
@@ -76,8 +77,8 @@ public class RegistrationServlet extends HttpServlet {
             } else {// not logged in yet
                 logger.debug("RegisrtServlet: no one user is logged in. Just check entered fields from registration form");
 
-                for (Map.Entry<String,String> entry: regData.entrySet()){
-                    if (entry.getValue().length() < 1){
+                for (Map.Entry<String, String> entry : regData.entrySet()) {
+                    if (entry.getValue().length() < 1) {
                         errors.put(entry.getKey(), "Cannot be empty!");
                     }
                 }
@@ -91,7 +92,7 @@ public class RegistrationServlet extends HttpServlet {
                 Pattern pattern = Pattern.compile(patternString);
                 Matcher matcher = pattern.matcher(pass);
                 if (pass.length() > 0 && !matcher.matches()) {
-                    errors.put("regPassword","Password should has minimum 4 symbols with at least one upper case letter and 1 digit!");
+                    errors.put("regPassword", "Password should has minimum 4 symbols with at least one upper case letter and 1 digit!");
                 }
 
                 if (errors.size() == 0) {
@@ -104,6 +105,7 @@ public class RegistrationServlet extends HttpServlet {
                     if (userDao.createUser(newUser)) {
                         message.append("<br><font color='green'><center>Hi, " + name + "! <br>You have been registered.</font>");
                         session.setAttribute("user", newUser);
+                        session.setAttribute("userCart", new Cart(newUser.getId()));
                     } else {
                         needRegistration = true;
                         message.append("<br><font color='red'><center>User wan't registered because of DB problems!</font>");
@@ -115,17 +117,14 @@ public class RegistrationServlet extends HttpServlet {
                 }
             }
 
-            if (needRegistration){
+            if (needRegistration) {
                 request.getRequestDispatcher("WEB-INF/views/registartion.jsp").forward(request, response);
             } else {
                 response.sendRedirect("WEB-INF/views/products.jsp");
             }
             session.setAttribute("message", message.toString());
         }
-
-
-
-}
+    }
 
     @Override
     public void destroy() {

@@ -21,6 +21,7 @@ public class LogoutServlet extends HttpServlet {
         session.invalidate();
         session = request.getSession();
         session.setAttribute("user", null);
+        session.setAttribute("userCart", null);
         session.setAttribute("showLoginForm", true);
         session.setAttribute("message", "");
         session.setAttribute("attempt", 0);
