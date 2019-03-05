@@ -7,14 +7,14 @@
 <c:set var="cartSize" value ="${sessionScope.userCart.getProducts().entrySet().stream().map(e -> e.getValue()).reduce(0, (a, b) -> a + b)}"/>
 <c:set var="productsInCart" value="${sessionScope.userCart.getProducts()}" />
 
-<c:set var="totalSum" value ="0" />
+<c:set var="totalSum" value ="${0}" />
 <c:forEach var="entry" items="${sessionScope.userCart.getProducts().entrySet()}">
-     ${totalSum += entry.getValue() * (entry.getKey()).getPrice()};
+    <c:set var="totalSum" value="${totalSum + entry.getValue() * (entry.getKey()).getPrice()}" />
 </c:forEach>
 
 <br><br>
 <%--<br>header: session: ${session}--%>
-<br>header: sessionScope.userId: ${sessionScope.user.getId()}
+<br>header: userId: ${userId}
 <br>header: sessionScope.user: ${sessionScope.user}
 <br>header: username: ${username}
 <br>header: cartSize: ${cartSize}
