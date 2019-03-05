@@ -15,7 +15,6 @@ public class UserDaoMySqlImpl implements UserDao {
 
     private final static String CREATE_USER = "INSERT INTO users(login, password, name, address, comment) VALUES(?,?,?,?,?);";
     private final static String GET_USER_BY_ID = "SELECT * FROM users WHERE id = ?);";
-    private final static String GET_USER_BY_LOGIN_PASS = "SELECT * FROM users WHERE login = ? AND  password = ?";
     private final static String GET_ALL_USERS = "SELECT * FROM users;";
     private final static String GET_USER_BY_LOGIN = "SELECT * FROM users WHERE login = ?";
     private final static String SALT = "34Ru9k";
@@ -75,16 +74,6 @@ public class UserDaoMySqlImpl implements UserDao {
     }
 
     @Override
-    public User editUser(int id, User user) {
-        return null;
-    }
-
-    @Override
-    public boolean deleteUser(int id) {
-        return false;
-    }
-
-    @Override
     public User getUserByLogin(String login) {
         User user = new User();
         ResultSet rs = null;
@@ -133,6 +122,16 @@ public class UserDaoMySqlImpl implements UserDao {
         }
         md5.update(StandardCharsets.UTF_8.encode(hash  + SALT));
         return String.format("%032x", new BigInteger(md5.digest()));
+    }
+
+    @Override
+    public User editUser(int id, User user) {
+        return null;
+    }
+
+    @Override
+    public boolean deleteUser(int id) {
+        return false;
     }
 
 }

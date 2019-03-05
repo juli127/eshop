@@ -13,6 +13,5 @@ public interface ProductDao {
 
     List<Product> getAllProducts();
     List<Product> getProductsByCategory(int category);
-    int size();
 
 }

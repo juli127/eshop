@@ -1,3 +1,17 @@
+function check() {
+    alert('check was pressed');
+    $(document).ready(function(){
+            $.post("demo_test_post.asp",
+                {
+                    name: "Donald Duck",
+                    city: "Duckburg"
+                },
+                function(data,status){
+                    alert("Data: " + data + "\nStatus: " + status);
+                });
+    });
+}
+
 // scripts for 'product' page
 function plus(productId) {
     alert('plus: productId == null ? ' + (productId == null));
@@ -21,11 +35,10 @@ function minus(productId) {
 function buy(productId) {
     var elem = document.getElementById('productQnt' + productId);
     var qnt = +elem.innerHTML;
-    var userid = ${sessionScope.user.id == null? 0: sessionScope.user.id};
-    alert('user.id=' + userid);
-    if (userid == null || userid.equals("")) {
-        alert("Войдите в систему или зарегистрируйтесь, чтобы купить товар!");
-    } else {
+    // alert('user.id=' + userid);
+    // if (userid == null || userid.equals("")) {
+    //     alert("Login or register, please, to buy something!");
+    // } else {
         alert("Покупаем товар!");
         $.ajax({
             type: "POST",
@@ -35,8 +48,8 @@ function buy(productId) {
                 parseRespose(response);
             }
         });
-        alert(${sessionScope.user.name} +", товар был добавлен в Вашу корзину");
-    }
+        alert(${sessionScope.user.name} +", this item was added to your cart");
+    // }
 }
 
 // scripts for 'cart' page
