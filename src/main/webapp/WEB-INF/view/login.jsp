@@ -30,6 +30,6 @@
 </c:if>
 
 <c:if test="${message != null}">
-    ${message}
+   <center> ${message} </center>
 </c:if>
 <%@ include file="includes/footer.jsp" %>
