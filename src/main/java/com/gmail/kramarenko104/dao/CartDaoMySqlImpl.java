@@ -44,7 +44,7 @@ public class CartDaoMySqlImpl implements CartDao {
                 rs.getInt("quantity");
                 productsMap.put(product, rs.getInt("quantity"));
             }
-            cart = new Cart();
+            cart = new Cart(userId);
             cart.setProducts(productsMap);
         } catch (SQLException e) {
             e.printStackTrace();

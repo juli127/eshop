@@ -2,17 +2,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page isELIgnored="false" %>
 <c:set var="username" value="${sessionScope.user.getName()}"/>
+<c:set var="userId" value="${sessionScope.user.getId()}"/>
+
 <c:set var="cartSize" value ="${sessionScope.userCart.getProducts().entrySet().stream().map(e -> e.getValue()).reduce(0, (a, b) -> a + b)}"/>
+<c:set var="productsInCart" value="${sessionScope.userCart.getProducts()}" />
 
 <c:set var="totalSum" value ="0" />
-<c:forEach items="${sessionScope.userCart.getProducts().entrySet()}" var="entry">
+<c:forEach var="entry" items="${sessionScope.userCart.getProducts().entrySet()}">
      ${totalSum += entry.getValue() * (entry.getKey()).getPrice()};
 </c:forEach>
 
-<span userId='${sessionScope.user.getId()}'></span>
 <br><br>
 <%--<br>header: session: ${session}--%>
-<br>header: sessionScope.userId: ${sessionScope.user.id}
+<br>header: sessionScope.userId: ${sessionScope.user.getId()}
 <br>header: sessionScope.user: ${sessionScope.user}
 <br>header: username: ${username}
 <br>header: cartSize: ${cartSize}
