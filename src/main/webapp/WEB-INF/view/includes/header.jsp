@@ -1,13 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page isELIgnored="false" %>
-<c:set var="username" value="${sessionScope.user.name}"/>
+<c:set var="username" value="${sessionScope.user.getName()}"/>
 <span userId='${sessionScope.user.id}'></span>
 <br><br>
 <%--<br>header: session: ${session}--%>
 <br>header: sessionScope.userId: ${sessionScope.user.id}
 <br>header: sessionScope.user: ${sessionScope.user}
-<br>header: sessionScope.user.name: ${sessionScope.user.name}
+<br>header: sessionScope.user.getName(): ${username}
 <br>header: sessionScope.cartSize: ${sessionScope.cartSize}
 <br>header: sessionScope.totalSum: ${sessionScope.totalSum}
 <br>header: sessionScope.message: ${sessionScope.message}
