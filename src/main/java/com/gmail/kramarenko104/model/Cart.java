@@ -6,7 +6,6 @@ import java.util.Map;
 public class Cart {
 
     private int userId;
-
     private int cartSize;
     private int totalSum;
     private Map<Product, Integer> products;
@@ -47,6 +46,12 @@ public class Cart {
 
     public void setProducts(Map<Product, Integer> products) {
         this.products = products;
+    }
+
+    public String getJSON() {
+        StringBuilder json = new StringBuilder();
+        json.append("\"cartSize\":").append(cartSize).append(", \"totalSum\":").append(totalSum).append("}");
+        return json.toString();
     }
 
     @Override

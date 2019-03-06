@@ -3,21 +3,20 @@ package com.gmail.kramarenko104.controller;
 import com.gmail.kramarenko104.dao.CartDao;
 import com.gmail.kramarenko104.factoryDao.DaoFactory;
 import com.gmail.kramarenko104.model.Cart;
-import com.gmail.kramarenko104.model.Product;
 import com.gmail.kramarenko104.model.User;
+import com.google.gson.stream.JsonWriter;
 import org.apache.log4j.Logger;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Map;
+import java.io.OutputStreamWriter;
 
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart"})
 public class CartServlet extends HttpServlet {
@@ -69,32 +68,36 @@ public class CartServlet extends HttpServlet {
             //////////////////// CHANGE CART /////////////////////////////////////
             CartDao cartDao = daoFactory.getCartDao();
             // got this info from updateCart.js (TODO: parse it as JSON format)
-            String addProducts = request.getParameter("addPurchase");
-            if (addProducts != null) {
-                logger.debug("CatServlet: GOT PARAMETER addPurchase: === " + addProducts);
-                String[] addProductsArr = ((String)addProducts).split(":");
-                int productId = Integer.valueOf(addProductsArr[0]);
-                int quantity = Integer.valueOf(addProductsArr[1]);
-                cartDao.addProduct(currentUser.getId(), productId, quantity);
-                logger.debug("CartServlet: for user '" + currentUser.getName() + "' was added " + quantity + " of productId: " + productId);
+            String param = request.getParameter("action");
+            int productId = 0;
+            int quantity = 0;
 
-                needRefresh = true;
-            }
-
-            // got this info from updateCart.js (TODO: parse it as JSON format
-            String rmProducts = request.getParameter("removePurchase");
-            if (rmProducts != null) {
-                logger.debug("CartServlet: GOT PARAMETER removePurchase: === " + rmProducts);
-                String[] rmProductsArr = ((String)rmProducts).split(":");
-                int productId = Integer.valueOf(rmProductsArr[0]);
-                int quantity = Integer.valueOf(rmProductsArr[1]);
-                cartDao.removeProduct(currentUser.getId(), productId, quantity);
-                logger.debug("CartServlet: for user: " + currentUser.getName() + "was removed " + quantity + " of productId " + productId);
-                needRefresh = true;
+            switch (param) {
+                case "addPurchase":
+                    logger.debug("CatServlet: GOT PARAMETER addPurchase....");
+                    productId = Integer.valueOf(request.getParameter("productId"));
+                    quantity = Integer.valueOf(request.getParameter("quantity"));
+                    cartDao.addProduct(currentUser.getId(), productId, quantity);
+                    logger.debug("CartServlet: for user '" + currentUser.getName() + "' was added " + quantity + " of productId: " + productId);
+                    needRefresh = true;
+                    break;
+                case "removePurchase":
+                    logger.debug("CartServlet: GOT PARAMETER removePurchase ");
+                    productId = Integer.valueOf(request.getParameter("productId"));
+                    quantity = Integer.valueOf(request.getParameter("quantity"));
+                    cartDao.removeProduct(currentUser.getId(), productId, quantity);
+                    logger.debug("CartServlet: for user: " + currentUser.getName() + "was removed " + quantity + " of productId " + productId);
+                    needRefresh = true;
+                    break;
+                case "makeOrder":
+                    logger.debug("CartServlet: GOT PARAMETER makeOrder ");
+                    cartDao.deleteCart(currentUser.getId());
+                    logger.debug("CartServlet: for user: " + currentUser.getName() + " order was created and cart was cleared");
+                    needRefresh = true;
             }
 
             ///////////////// REFRESH CART's characteristics if refresh need ////////////////////////////////////////
-            logger.debug("CartServlet: needRefresh ==  "+ needRefresh);
+            logger.debug("CartServlet: needRefresh ==  " + needRefresh);
 
             Cart userCart = null;
             if (session.getAttribute("userCart") == null || needRefresh) {
@@ -104,16 +107,25 @@ public class CartServlet extends HttpServlet {
                     userCart = new Cart(userId);
                 }
                 session.setAttribute("userCart", userCart);
+                // send JSON to cart.jsp
+                if (userCart != null) {
+                    OutputStream outputStream = new ByteArrayOutputStream();
+                    JsonWriter writer = new JsonWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                    writer.beginObject();
+                    writer.name("cartSize");
+                    writer.value(userCart.getCartSize());
+                    writer.name("totalSum");
+                    writer.value(userCart.getTotalSum());
+                    writer.endObject();
+                    writer.close();
+                }
             }
             daoFactory.deleteCartDao(cartDao);
         } else {
             logger.debug("CartServlet: Current user == null ");
         }
 
-//        OutputStream out = response.getOutputStream();
-//        out.write("hello world".getBytes());
         request.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(request, response);
-
     }
 
     @Override

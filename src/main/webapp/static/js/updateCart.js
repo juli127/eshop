@@ -32,7 +32,8 @@ function buy(userId, productId) {
         $.ajax({
             type: "POST",
             url: "./cart",
-            data: "addPurchase=" + productId + ":" + qnt,
+            data: {'action':'addPurchase','productId':productId, 'quantity' :qnt},
+            dataType: 'json',
             success: function (response) {
                 parseRespose(response);
             }
@@ -52,7 +53,12 @@ function deleteFromCart(productId) {
         $.ajax({
             type: "POST",
             url: "./cart",
-            data: "removePurchase=" + productId + ":" + 1,
+            data: {
+                'action':'removePurchase',
+                'productId':productId,
+                'quantity' :1
+            },
+            dataType: 'json',
             // data: { removePurchase : productId + ":" + qnt },
             success: function (response) {
                 parseRespose(response);
@@ -69,7 +75,12 @@ function addToCart(productId) {
     $.ajax({
         type: "POST",
         url: "./cart",
-        data: "addPurchase=" + productId + ":" + 1,
+        data: {
+            'action': 'addPurchase',
+            'productId': productId,
+            'quantity': 1
+        },
+        dataType: 'json',
         success: function (response) {
             parseRespose(response);
         }
@@ -79,6 +90,10 @@ function addToCart(productId) {
 function parseRespose(response) {
     // TODO: parse responce as JSON format (got it from CartServlet.java)
     alert("got responce from server: " + response);
+
+    var json = $.parseJSON(response);
+
+
 
     var respData = response.toString().split("<br>");
     for (var i = 0; i < respData.length; i++) {
@@ -104,24 +119,11 @@ function makeOrder(userId) {
     $.ajax({
         type: "POST",
         url: "./order",
-        data: "orderUserID=" + (myId),
+        data: {
+            'action':'makeOrder'},
+        dataType: 'json',
         success: function (response) {
             alert('Заказ оформлен');
         }
-    });
-}
-
-// just for test
-function check() {
-    alert('check was pressed');
-    $(document).ready(function(){
-        $.post("demo_test_post.asp",
-            {
-                name: "Donald Duck",
-                city: "Duckburg"
-            },
-            function(data,status){
-                alert("Data: " + data + "\nStatus: " + status);
-            });
     });
 }
