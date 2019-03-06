@@ -22,10 +22,11 @@ public class ProductDaoMySqlImpl implements ProductDao {
     private final static String GET_PRODUCT_BY_ID = "SELECT * FROM products WHERE id = ?;";
     private final static String GET_PRODUCTS_BY_CATEGORY = "SELECT * FROM products WHERE category = ?;";
     private Connection conn;
-    private List<Product> allProductsList = new ArrayList<>();
+    private List<Product> allProductsList;
 
     public ProductDaoMySqlImpl(Connection conn) {
         this.conn = conn;
+        allProductsList = new ArrayList<>();
     }
 
     @Override
@@ -80,7 +81,6 @@ public class ProductDaoMySqlImpl implements ProductDao {
 
     @Override
     public List<Product> getProductsByCategory(int category) {
-        logger.debug("ProductDao:getProductsByCategory: enter... " );
         List<Product> productsList = new ArrayList<>();
         ResultSet rs = null;
         try (PreparedStatement ps = conn.prepareStatement(GET_PRODUCTS_BY_CATEGORY)) {

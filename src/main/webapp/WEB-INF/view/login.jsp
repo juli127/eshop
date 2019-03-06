@@ -1,9 +1,8 @@
 <%@ include file="includes/header.jsp" %>
-<%@ page contentType="text/html; charset=UTF-8" %>
 
 <c:if test="${showLoginForm}">
     <center>
-        <form action='/login' method='post'>
+        <form action='./login' method='post'>
             <table border=0>
                 <tr>
                     <td>Enter e-mail as login</td>
@@ -26,4 +25,5 @@
 <c:if test="${message != null}">
    <center> ${message} </center>
 </c:if>
+
 <%@ include file="includes/footer.jsp" %>

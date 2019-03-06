@@ -12,8 +12,8 @@ import java.util.Map;
 public class CartDaoMySqlImpl implements CartDao {
 
     private final static String ADD_TO_CART = "INSERT INTO carts (userId, productId, quantity) VALUES(?,?,?);";
-    private final static String DELETE_CART = "DELETE FROM carts WHERE id = ?;";
-    private final static String DELETE_PRODUCT = "DELETE FROM carts WHERE id = ? AND productId ?;";
+    private final static String DELETE_CART = "DELETE FROM carts WHERE userId = ?;";
+    private final static String DELETE_PRODUCT = "DELETE FROM carts WHERE userId = ? AND productId = ?;";
     private final static String UPDATE_CART = "UPDATE carts SET quantity = ? WHERE userId =? AND productId = ?;";
     private final static String GET_PRODUCTS_BY_USERID_AND_PRODUCTID = "SELECT * FROM carts WHERE userId =? AND productId = ?;";
     private final static String GET_PRODUCTS_BY_USERID = "SELECT * FROM carts WHERE userId =?;";
@@ -33,19 +33,26 @@ public class CartDaoMySqlImpl implements CartDao {
         try (PreparedStatement pst = conn.prepareStatement(GET_ALL_PRODUCTS_FROM_CART)) {
             pst.setInt(1, userId);
             rs = pst.executeQuery();
+            int totalSum = 0;
+            int cartSize = 0;
             while (rs.next()) {
                 Product product = new Product();
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("name"));
                 product.setCategory(rs.getInt("category"));
                 product.setDescription(rs.getString("description"));
-                product.setPrice(rs.getInt("price"));
+                int price = rs.getInt("price");
+                product.setPrice(price);
                 product.setImage(rs.getString("image"));
-                rs.getInt("quantity");
-                productsMap.put(product, rs.getInt("quantity"));
+                int quantity = rs.getInt("quantity");
+                productsMap.put(product, quantity);
+                cartSize += quantity;
+                totalSum += quantity * price;
             }
             cart = new Cart(userId);
             cart.setProducts(productsMap);
+            cart.setCartSize(cartSize);
+            cart.setTotalSum(totalSum);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

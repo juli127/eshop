@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -30,8 +31,33 @@ public class CartServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        boolean needRefresh = false;
 
-        logger.debug("CartServlet: -------enter-------------------- ");
+        if (session.getAttribute("user") != null) {
+            User currentUser = (User) session.getAttribute("user");
+            logger.debug("CartServlet: Current user: " + currentUser.getName());
+            int userId = currentUser.getId();
+
+            Cart userCart = null;
+            if (session.getAttribute("userCart") == null) {
+                CartDao cartDao = daoFactory.getCartDao();
+                userCart = cartDao.getCart(userId);
+                if (userCart == null) {
+                    logger.debug("CartServlet: cart from DB == null! create new cart for userId: " + userId);
+                    userCart = new Cart(userId);
+                }
+                session.setAttribute("userCart", userCart);
+                daoFactory.deleteCartDao(cartDao);
+            }
+        } else {
+            session.setAttribute("message", "You should login to see your cart");
+            logger.debug("CartServlet: Current user == null ");
+        }
+        request.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(request, response);
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         boolean needRefresh = false;
 
@@ -47,12 +73,11 @@ public class CartServlet extends HttpServlet {
             if (addProducts != null) {
                 logger.debug("CatServlet: GOT PARAMETER addPurchase: === " + addProducts);
                 String[] addProductsArr = ((String)addProducts).split(":");
-                for (String s : addProductsArr) {
-                    int productId = Integer.valueOf(addProductsArr[0]);
-                    int quantity = Integer.valueOf(addProductsArr[1]);
-                    cartDao.addProduct(currentUser.getId(), productId, quantity);
-                    logger.debug("CartServlet: for user: " + currentUser.getName() + "was added " + quantity + " of productId " + productId);
-                }
+                int productId = Integer.valueOf(addProductsArr[0]);
+                int quantity = Integer.valueOf(addProductsArr[1]);
+                cartDao.addProduct(currentUser.getId(), productId, quantity);
+                logger.debug("CartServlet: for user '" + currentUser.getName() + "' was added " + quantity + " of productId: " + productId);
+
                 needRefresh = true;
             }
 
@@ -61,12 +86,10 @@ public class CartServlet extends HttpServlet {
             if (rmProducts != null) {
                 logger.debug("CartServlet: GOT PARAMETER removePurchase: === " + rmProducts);
                 String[] rmProductsArr = ((String)rmProducts).split(":");
-                for (String s : rmProductsArr) {
-                    int productId = Integer.valueOf(rmProductsArr[0]);
-                    int quantity = Integer.valueOf(rmProductsArr[1]);
-                    cartDao.removeProduct(currentUser.getId(), productId, quantity);
-                    logger.debug("CartServlet: for user: " + currentUser.getName() + "was removed " + quantity + " of productId " + productId);
-                }
+                int productId = Integer.valueOf(rmProductsArr[0]);
+                int quantity = Integer.valueOf(rmProductsArr[1]);
+                cartDao.removeProduct(currentUser.getId(), productId, quantity);
+                logger.debug("CartServlet: for user: " + currentUser.getName() + "was removed " + quantity + " of productId " + productId);
                 needRefresh = true;
             }
 
@@ -77,19 +100,20 @@ public class CartServlet extends HttpServlet {
             if (session.getAttribute("userCart") == null || needRefresh) {
                 userCart = cartDao.getCart(userId);
                 if (userCart == null) {
+                    logger.debug("CartServlet: cart from DB == null! create new cart fror userId: " + userId);
                     userCart = new Cart(userId);
                 }
                 session.setAttribute("userCart", userCart);
             }
             daoFactory.deleteCartDao(cartDao);
+        } else {
+            logger.debug("CartServlet: Current user == null ");
         }
 
+//        OutputStream out = response.getOutputStream();
+//        out.write("hello world".getBytes());
         request.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(request, response);
-        logger.debug("CartServlet.doGet: -------exit-------------------- ");
-    }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
     }
 
     @Override

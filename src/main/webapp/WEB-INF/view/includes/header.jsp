@@ -1,26 +1,24 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page isELIgnored="false" %>
-<c:set var="username" value="${sessionScope.user.getName()}"/>
-<c:set var="userId" value="${sessionScope.user.getId()}"/>
 
-<c:set var="cartSize" value ="${sessionScope.userCart.getProducts().entrySet().stream().map(e -> e.getValue()).reduce(0, (a, b) -> a + b)}"/>
-<c:set var="productsInCart" value="${sessionScope.userCart.getProducts()}" />
+<c:set var="user" value="${sessionScope.user}"/>
+<c:set var="username" value="${user.getName()}"/>
+<c:set var="userId" value="${user.getId()}"/>
+<c:set var="cart" value="${sessionScope.userCart}"/>
+<c:set var="cartSize" value ="${cart.getCartSize()}"/>
+<c:set var="productsInCart" value="${cart.getProducts()}" />
+<c:set var="totalSum" value ="${cart.getTotalSum()}" />
 
-<c:set var="totalSum" value ="${0}" />
-<c:forEach var="entry" items="${sessionScope.userCart.getProducts().entrySet()}">
-    <c:set var="totalSum" value="${totalSum + entry.getValue() * (entry.getKey()).getPrice()}" />
-</c:forEach>
-
-<br><br>
+<%--<br><br>--%>
 <%--<br>header: session: ${session}--%>
-<br>header: userId: ${userId}
-<br>header: sessionScope.user: ${sessionScope.user}
-<br>header: username: ${username}
-<br>header: cartSize: ${cartSize}
-<br>header: totalSum: ${totalSum}
-<br>header: sessionScope.message: ${sessionScope.message}
-<br>header: sessionScope.regErrors: ${sessionScope.regErrors}
+<%--<br>header: userId: ${userId}--%>
+<%--<br>header: sessionScope.user: ${sessionScope.user}--%>
+<%--<br>header: username: ${username}--%>
+<%--<br>header: cartSize: ${cartSize}--%>
+<%--<br>header: totalSum: ${totalSum}--%>
+<%--<br>header: sessionScope.message: ${sessionScope.message}--%>
+<%--<br>header: sessionScope.regErrors: ${sessionScope.regErrors}--%>
 
 <c:choose>
     <c:when test="${username != null}">
@@ -38,6 +36,7 @@
     <meta name="description" content=""/>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <link href="static/css/style.css" rel="stylesheet" type="text/css" media="screen"/>
+    <%--<link href="static/images/*.jpg" type="image" media="screen"/>--%>
 </head>
 
 <body>
@@ -55,7 +54,7 @@
                         <ul>
                             <li><a href="products">All categories</a></li>
                             <c:choose>
-                                <c:when test="${username != null}">
+                                <c:when test="${user != null}">
                                     <li><a href="logout">Logout</a></li>
                                 </c:when>
                                 <c:otherwise>
@@ -71,7 +70,7 @@
         </table>
     </div>
 
-    <c:if test="${username != null}">
+    <c:if test="${username != null && username.length() > 0}">
     <div id="autoriz">
         ${greeting} your cart has <span id="goodsCount">${cartSize==null?0:cartSize}</span></> items
     </div>
