@@ -48,12 +48,6 @@ public class Cart {
         this.products = products;
     }
 
-    public String getJSON() {
-        StringBuilder json = new StringBuilder();
-        json.append("\"cartSize\":").append(cartSize).append(", \"totalSum\":").append(totalSum).append("}");
-        return json.toString();
-    }
-
     @Override
     public String toString() {
         return "Cart{" +

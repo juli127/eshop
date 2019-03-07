@@ -190,10 +190,10 @@ a {
 
 .productName {
     /*width: 230px;*/
-	height: 40px;
+	height: 38px;
 	font-size: 14px;
     text-align: center;
-	padding: 2px 2px 1px 2px;
+	padding: 1px 1px 1px 1px;
 }
 
 #cart{

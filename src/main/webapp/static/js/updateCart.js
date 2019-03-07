@@ -1,45 +1,39 @@
 // scripts for 'product' page
 function plus(productId) {
-    alert('plus: productId == null ? ' + (productId == null));
-    alert('plus: from form == ' + (document.getElementById('productId').innerText));
     var elem = document.getElementById('pq' + productId);
-    var qnt = +elem.innerHTML + 1;
-    // alert('plus: qnt = ' + qnt);
-    elem.innerHTML = qnt;
+    elem.innerHTML = +elem.innerHTML + 1;
 }
 
 function minus(productId) {
-    alert('minus: productId == null ? ' + (productId == null));
     var elem = document.getElementById('pq' + productId);
-    var qnt = +elem.innerHTML;
     if (elem.innerHTML > 0) {
-        elem.innerHTML = qnt - 1;
+        elem.innerHTML = +elem.innerHTML - 1;
     }
-    // alert('minus: qnt = ' + qnt);
 }
 
 function buy(userId, productId) {
-    var elem = document.getElementById('pq' + productId);
-    var qnt = +elem.innerHTML;
-    if (userId == null){
+    if (userId == null || userId == ""){
         alert("You should register or login before shopping!");
     } else {
-        // alert('user.id=' + userid);
-        // if (userid == null || userid.equals("")) {
-        //     alert("Login or register, please, to buy something!");
-        // } else {
-        alert("Buy " + qnt + " items of product with Id " + productId);
+        var elem = document.getElementById('pq' + productId);
+        var qnt = +elem.innerHTML;
         $.ajax({
             type: "POST",
             url: "./cart",
-            data: {'action':'addPurchase','productId':productId, 'quantity' :qnt},
+            data: {
+                'action':'add',
+                'productId': productId,
+                'quantity' : qnt
+            },
             dataType: 'json',
             success: function (response) {
                 parseRespose(response);
+            },
+            error: function(e) {
+                console.log(e.message);
             }
         });
-        alert(" this item was added to your cart");
-        // }
+        alert(qnt + " items was added to your cart");
     }
 }
 
@@ -49,19 +43,20 @@ function deleteFromCart(productId) {
     var qnt = +elem.innerHTML;
     if (elem.innerHTML > 0) {
         elem.innerHTML = qnt - 1;
-        // TODO: change request to JSON format
         $.ajax({
             type: "POST",
             url: "./cart",
             data: {
-                'action':'removePurchase',
-                'productId':productId,
-                'quantity' :1
+                'action':'remove',
+                'productId': productId,
+                'quantity': 1
             },
             dataType: 'json',
-            // data: { removePurchase : productId + ":" + qnt },
             success: function (response) {
                 parseRespose(response);
+            },
+            error: function(e) {
+                console.log(e.message);
             }
         });
     }
@@ -69,49 +64,38 @@ function deleteFromCart(productId) {
 
 function addToCart(productId) {
     var elem = document.getElementById('q' + productId);
-    var qnt = +elem.innerHTML + 1;
-    elem.innerHTML = qnt;
-    // TODO: change request to JSON format
+    elem.innerHTML = +elem.innerHTML + 1;
     $.ajax({
         type: "POST",
         url: "./cart",
         data: {
-            'action': 'addPurchase',
+            'action': 'add',
             'productId': productId,
             'quantity': 1
         },
         dataType: 'json',
         success: function (response) {
             parseRespose(response);
+        },
+        error: function(e) {
+            console.log(e.message);
         }
     });
 }
 
-function parseRespose(response) {
-    // TODO: parse responce as JSON format (got it from CartServlet.java)
-    alert("got responce from server: " + response);
-
-    var json = $.parseJSON(response);
-
-
-
-    var respData = response.toString().split("<br>");
-    for (var i = 0; i < respData.length; i++) {
-        if (respData[i].startsWith("header:")) {
-            var start = respData[i].indexOf("header: ");
-            if (start >= 0) {
-                respData[i] = respData[i].substring(start + 8).trim();
-                if (respData[i].startsWith("totalSum:")) {
-                    alert("got from server TotalSum: " + respData[i].substring(start + 9).trim());
-                    document.getElementById('TotalSum').innerHTML = respData[i].substring(start + 9).trim();
-                }
-                if (respData[i].startsWith("cartSize:")) {
-                    alert("got from server cartSize: " + respData[i].substring(start + 9).trim());
-                    document.getElementById('goodsCount').innerHTML = respData[i].substring(start + 9).trim();
-                }
-            }
-        }
-    }
+// got JSON string from /cart servlet
+function parseRespose(responce) {
+    var responceJSON = JSON.stringify(responce);
+    // alert('got JSON from server: '+ responceJSON);
+    var responceJSON = JSON.parse(responceJSON);
+    document.getElementById('goodsCount').innerHTML = responceJSON.cartSize;
+    document.getElementById('TotalSum').innerHTML = responceJSON.totalSum;
+    // var updProdcustsMap = new Map();
+    // for (i=0; i < responceJSON.products.length; i++){
+    //     updProdcust[i].productId = responceJSON.products[i].key.name;
+    //     updProdcust[i].productId = responceJSON.products[i].productId;
+    // }
+    // alert('got updated Cart products: '+ responceJSON.products);
 }
 
 function makeOrder(userId) {
@@ -120,10 +104,15 @@ function makeOrder(userId) {
         type: "POST",
         url: "./order",
         data: {
-            'action':'makeOrder'},
+            'action':'makeOrder',
+            'userID':userId
+        },
         dataType: 'json',
         success: function (response) {
-            alert('Заказ оформлен');
+            alert('Order has been created');
+        },
+        error: function(e) {
+            console.log(e.message);
         }
     });
 }

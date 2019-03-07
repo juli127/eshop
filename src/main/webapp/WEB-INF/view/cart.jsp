@@ -1,15 +1,6 @@
 <%@ include file="includes/header.jsp" %>
 
-<c:set var="userLine" value=""/>
-<c:if test="${username != null && cartSize > 0}">
-    <c:set var="userLine" value="${username}, your cart:"/>
-</c:if>
-
 <br><br>
-<h3>
-    <div id="info">${userLine}</div>
-</h3>
-
 <h3>${message}</h3>
 <br><br>
 

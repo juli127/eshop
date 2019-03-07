@@ -1,6 +1,4 @@
 <%@ include file="includes/header.jsp" %>
-<%--<br>products.jsp: userName: ${sessionScope.userName}--%>
-<%--<br>products.jsp: selectedCateg: ${sessionScope.selectedCateg}--%>
 
 <c:if test="${sessionScope.products.size() > 0}">
     <c:forEach var="product" items="${sessionScope.products}">
