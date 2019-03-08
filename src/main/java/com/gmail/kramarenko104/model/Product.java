@@ -1,9 +1,12 @@
 package com.gmail.kramarenko104.model;
 
+import com.google.gson.Gson;
+import org.apache.log4j.Logger;
 import java.util.Objects;
 
 public class Product {
 
+    private static Logger logger = Logger.getLogger(Product.class);
     private int id;
     private String name;
     private int category;
@@ -79,8 +82,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return "[productId: " + id + ", name: '" + name + '\'' +
-                ", category: " + category +
-                ", price: " + price + "]";
+//        return "{\u0027productId\u0027:" + id + ", \u0027name\u0027:'" + name + "',\u0027category\u0027:" + category + ",\u0027price\u0027:" + price + "}";
+        return "{\"productId\":" + id + ",\"name\":\"" + name + "\",\"category\":" + category + ",\"price\":" + price + "}";
     }
 }

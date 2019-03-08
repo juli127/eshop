@@ -60,6 +60,7 @@ public class CartServlet extends HttpServlet {
         HttpSession session = request.getSession();
         boolean needRefresh = false;
         logger.debug("CartServlet: ----enter POST -------");
+
         if (session.getAttribute("user") != null) {
             User currentUser = (User) session.getAttribute("user");
             logger.debug("CartServlet: Current user: " + currentUser.getName());
@@ -67,8 +68,7 @@ public class CartServlet extends HttpServlet {
 
             //////////////////// CHANGE CART /////////////////////////////////////
             CartDao cartDao = daoFactory.getCartDao();
-
-            // got info from Ajax POST request (updateCart.js)
+            // get info from Ajax POST request (from updateCart.js)
             String param = request.getParameter("action");
             if (param != null && param.length() > 0) {
                 int productId = 0;
@@ -95,25 +95,23 @@ public class CartServlet extends HttpServlet {
                 }
                 needRefresh = true;
             }
-
-            ///////////////// REFRESH CART's characteristics if refresh need ////////////////////////////////////////
+            ///////////////// REFRESH CART's characteristics if refresh need
             logger.debug("CartServlet: needRefresh ==  " + needRefresh);
-
             Cart userCart = null;
             if (session.getAttribute("userCart") == null || needRefresh) {
                 userCart = cartDao.getCart(userId);
                 if (userCart == null) {
-                    logger.debug("CartServlet: cart from DB == null! create new cart fror userId: " + userId);
+                    logger.debug("CartServlet: cart from DB == null! create the new cart for userId: " + userId);
                     userCart = new Cart(userId);
                 }
                 session.setAttribute("userCart", userCart);
 
-                // send JSON to cart.jsp with updated totalSum and cartSize
+                // send JSON with updated Cart to cart.jsp
                 if (userCart != null) {
                     logger.debug("CartServlet: updated cartSize: " + userCart.getCartSize());
                     logger.debug("CartServlet: updated totalSum: " + userCart.getTotalSum());
                     String jsondata = new Gson().toJson(userCart);
-                    logger.debug("CartServlet: send JSON data to cart.jsp ---->"+jsondata);
+                    logger.debug("CartServlet: send JSON data to cart.jsp ---->" + jsondata);
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
@@ -124,6 +122,7 @@ public class CartServlet extends HttpServlet {
             }
             daoFactory.deleteCartDao(cartDao);
         } else {
+            session.setAttribute("message", "You should login to see your cart");
             logger.debug("CartServlet: Current user == null ");
         }
 

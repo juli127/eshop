@@ -4,7 +4,6 @@
 
 <c:set var="user" value="${sessionScope.user}"/>
 <c:set var="username" value="${user.getName()}"/>
-<c:set var="userId" value="${user.getId()}"/>
 <c:set var="cart" value="${sessionScope.userCart}"/>
 <c:set var="cartSize" value ="${cart.getCartSize()}"/>
 <c:set var="productsInCart" value="${cart.getProducts()}" />
@@ -70,9 +69,9 @@
         </table>
     </div>
 
-    <c:if test="${username != null && username.length() > 0}">
+    <c:if test="${user != null && username.length() > 0}">
     <div id="autoriz">
-        ${greeting} your cart has <span id="goodsCount">${cartSize==null?0:cartSize}</span></> items
+        ${greeting} your cart has <span id="goodsCountField">${cartSize==null?0:cartSize}</span></> items
     </div>
     </c:if>
 

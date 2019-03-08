@@ -12,9 +12,9 @@ public class Cart {
 
     public Cart(int userId) {
         this.userId = userId;
-        this.cartSize = 0;
-        this.totalSum = 0;
-        this.products = new HashMap<>();
+        cartSize = 0;
+        totalSum = 0;
+        products = new HashMap<>();
     }
 
     public int getCartSize() {
@@ -51,9 +51,9 @@ public class Cart {
     @Override
     public String toString() {
         return "Cart{" +
-                "userId=" + userId +
-                ", cartSize=" + cartSize +
-                ", totalSum=" + totalSum +
+                "userId:" + userId +
+                ", cartSize:" + cartSize +
+                ", totalSum:" + totalSum +
                 '}';
     }
 }
