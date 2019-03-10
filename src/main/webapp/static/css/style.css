@@ -191,7 +191,7 @@ a {
 #cart{
 	text-align: center;
     font-size: 120%;
-	margin: 0 0 0 280px;
+	margin: 0 0 0 45%;
 }
 
 #tableTitle{
@@ -222,22 +222,14 @@ a {
 #myTableFormatting{
 	text-align: left;
 	font-size: 100%;
-	/*margin: 0 0 0 280px;*/
 }
 
 #info{
     color:  #f59506;
-    font-size: 120%;
+    font-size: 130%;
     text-align: center;
     align-content: center;
 }
-
-/*#title{*/
-    /*color:  #f59506;*/
-    /*font-size: 120%;*/
-    /*text-align: center;*/
-    /*align-content: center;*/
-/*}*/
 
 #myButtonsFormatting {
 	font-size: 150%;
