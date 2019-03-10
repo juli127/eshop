@@ -11,12 +11,12 @@ import java.util.Map;
 
 public class CartDaoMySqlImpl implements CartDao {
 
+    private final static String GET_CART = "SELECT count(*) AS rows FROM carts WHERE userId = ?";
     private final static String ADD_TO_CART = "INSERT INTO carts (userId, productId, quantity) VALUES(?,?,?);";
     private final static String DELETE_CART = "DELETE FROM carts WHERE userId = ?;";
     private final static String DELETE_PRODUCT = "DELETE FROM carts WHERE userId = ? AND productId = ?;";
     private final static String UPDATE_CART = "UPDATE carts SET quantity = ? WHERE userId =? AND productId = ?;";
     private final static String GET_PRODUCTS_BY_USERID_AND_PRODUCTID = "SELECT * FROM carts WHERE userId =? AND productId = ?;";
-    private final static String GET_PRODUCTS_BY_USERID = "SELECT * FROM carts WHERE userId =?;";
     private final static String GET_ALL_PRODUCTS_FROM_CART = "SELECT products.*, carts.quantity FROM products INNER JOIN carts ON products.id = carts.productId WHERE carts.userId = ?;";
     private static Logger logger = Logger.getLogger(CartDaoMySqlImpl.class);
     private Connection conn;
@@ -27,36 +27,54 @@ public class CartDaoMySqlImpl implements CartDao {
 
     @Override
     public Cart getCart(int userId) {
-        Map<Product, Integer> productsMap = new HashMap<>();
-        ResultSet rs = null;
         Cart cart = null;
-        try (PreparedStatement pst = conn.prepareStatement(GET_ALL_PRODUCTS_FROM_CART)) {
+        int rows = 0;
+        ResultSet rs = null;
+        try (PreparedStatement pst = conn.prepareStatement(GET_CART)) {
             pst.setInt(1, userId);
             rs = pst.executeQuery();
-            int totalSum = 0;
-            int cartSize = 0;
             while (rs.next()) {
-                Product product = new Product();
-                product.setId(rs.getInt("id"));
-                product.setName(rs.getString("name"));
-                product.setCategory(rs.getInt("category"));
-                product.setDescription(rs.getString("description"));
-                int price = rs.getInt("price");
-                product.setPrice(price);
-                product.setImage(rs.getString("image"));
-                int quantity = rs.getInt("quantity");
-                productsMap.put(product, quantity);
-                cartSize += quantity;
-                totalSum += quantity * price;
+                rows = rs.getInt("rows");
             }
-            cart = new Cart(userId);
-            cart.setProducts(productsMap);
-            cart.setCartSize(cartSize);
-            cart.setTotalSum(totalSum);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+        }finally {
             closeResultSet(rs);
+        }
+        logger.debug("CartDao.getCart: SQL: " + GET_CART + ", userId = " + userId + " ==> rows: " + rows);
+
+        if (rows > 0) {
+            Map<Product, Integer> productsMap = new HashMap<>();
+            logger.debug("CartDao.getCart: SQL: " + GET_ALL_PRODUCTS_FROM_CART + ", userId = " + userId);
+            try (PreparedStatement pst = conn.prepareStatement(GET_ALL_PRODUCTS_FROM_CART)) {
+                pst.setInt(1, userId);
+                rs = pst.executeQuery();
+                int totalSum = 0;
+                int itemsCount = 0;
+                while (rs.next()) {
+
+                    Product product = new Product();
+                    product.setId(rs.getInt("id"));
+                    product.setName(rs.getString("name"));
+                    product.setCategory(rs.getInt("category"));
+                    product.setDescription(rs.getString("description"));
+                    int price = rs.getInt("price");
+                    product.setPrice(price);
+                    product.setImage(rs.getString("image"));
+                    int quantity = rs.getInt("quantity");
+                    productsMap.put(product, quantity);
+                    itemsCount += quantity;
+                    totalSum += quantity * price;
+                }
+                cart = new Cart(userId);
+                cart.setProducts(productsMap);
+                cart.setItemsCount(itemsCount);
+                cart.setTotalSum(totalSum);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                closeResultSet(rs);
+            }
         }
         return cart;
     }
@@ -82,6 +100,7 @@ public class CartDaoMySqlImpl implements CartDao {
         }
         else { //there isn't such product in dB, add it
             logger.debug("++++CartDao.addProduct: there isn't such product in dB, add it");
+            logger.debug("++++CartDao.addProduct: userId: " + userId + ", productId: " + productId + ", addQuantity: " + addQuantity);
             try (PreparedStatement pst = conn.prepareStatement(ADD_TO_CART)) {
                 conn.setAutoCommit(false);
                 pst.setInt(1, userId);

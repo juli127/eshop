@@ -14,10 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +36,6 @@ public class RegistrationServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-
         StringBuilder message = new StringBuilder();
         boolean needRegistration = false;
 
@@ -49,19 +45,11 @@ public class RegistrationServlet extends HttpServlet {
         String name = request.getParameter("name");
         String address = request.getParameter("address");
         String comment = request.getParameter("comment");
-
-        Map<String, String> regData = new HashMap<>();
-        regData.put("login", login);
-        regData.put("pass", pass);
-        regData.put("repass", repass);
-        regData.put("name", name);
-        regData.put("address", address);
-
         Map<String, String> errors = new HashMap<>();
+        StringBuilder errorsMsg = new StringBuilder();
 
         if (session != null) {
-            // already logged in
-            if (session.getAttribute("user") != null) {
+            if (session.getAttribute("user") != null) { // already logged in
                 logger.debug("RegisrtServlet: some user is already logged in");
                 User currentUser = (User) session.getAttribute("user");
                 String currentLogin = currentUser.getLogin();
@@ -75,54 +63,81 @@ public class RegistrationServlet extends HttpServlet {
                     needRegistration = true;
                 }
             } else {// not logged in yet
-                logger.debug("RegisrtServlet: no one user is logged in. Just check entered fields from registration form");
+                if (!"".equals(login)) {
+                    Map<String, String> regData = new HashMap<>();
+                    regData.put("login", login);
+                    regData.put("pass", pass);
+                    regData.put("repass", repass);
+                    regData.put("name", name);
+                    regData.put("address", address);
+                    logger.debug("RegisrtServlet: no one user is logged in. Just check entered fields from registration form");
 
-                for (Map.Entry<String, String> entry : regData.entrySet()) {
-                    if (entry.getValue().length() < 1) {
-                        errors.put(entry.getKey(), "Cannot be empty!");
+                    for (Map.Entry<String, String> entry : regData.entrySet()) {
+                        logger.debug("RegisrtServlet: user entered: " + entry.getKey() + ": " + entry.getValue());
+                        if (entry.getValue() == null || entry.getValue().length() < 1) {
+                            errors.put(entry.getKey(), "Cannot be empty!");
+                        }
                     }
-                }
-                regData = null;
+                    if (repass.length() > 0 && !pass.equals(repass)) {
+                        errors.put("", "Password and retyped one don't match!");
+                    }
 
-                if (repass.length() > 0 && !pass.equals(repass)) {
-                    errors.put("regRepassword", "Password and retyped one don't match!");
-                }
+                    String patternString = "([0-9a-zA-Z]+){4,}";
+                    Pattern pattern = Pattern.compile(patternString);
+                    Matcher matcher = pattern.matcher(pass);
+                    logger.debug("RegisrtServlet: pass.length(): " + pass.length());
+                    logger.debug("RegisrtServlet: repass.length(): " + repass.length());
+                    if (pass.length() > 0 && !matcher.matches()) {
+                        errors.put("", "Password should have minimum 4 symbols!");
+                    }
 
-                String patternString = "([0-9a-zA-Z]+){4,}";
-                Pattern pattern = Pattern.compile(patternString);
-                Matcher matcher = pattern.matcher(pass);
-                if (pass.length() > 0 && !matcher.matches()) {
-                    errors.put("regPassword", "Password should has minimum 4 symbols with at least one upper case letter and 1 digit!");
-                }
-
-                if (errors.size() == 0) {
-                    UserDao userDao = daoFactory.getUserDao();
-                    User newUser = new User();
-                    newUser.setLogin(login);
-                    newUser.setPassword(pass);
-                    newUser.setAddress(address);
-                    newUser.setComment(comment);
-                    if (userDao.createUser(newUser)) {
-                        message.append("<br><font color='green'><center>Hi, " + name + "! <br>You have been registered.</font>");
-                        session.setAttribute("user", newUser);
-                        session.setAttribute("userCart", new Cart(newUser.getId()));
+                    if (errors.size() == 0) {
+                        logger.debug("RegisrtServlet: anything was entered correctly");
+                        UserDao userDao = daoFactory.getUserDao();
+                        User newUser = new User();
+                        newUser.setLogin(login);
+                        newUser.setName(name);
+                        newUser.setPassword(pass);
+                        newUser.setAddress(address);
+                        newUser.setComment(comment);
+                        if (userDao.createUser(newUser)) {
+                            newUser = userDao.getUserByLogin(login);
+                            logger.debug("RegisrtServlet: new user was created: " + newUser);
+                            message.append("<br><font color='green'><center>Hi, " + name + "! <br>You have been registered. You can shopping now!</font>");
+                            session.setAttribute("user", newUser);
+                            session.setAttribute("userCart", new Cart(newUser.getId()));
+                        } else {
+                            needRegistration = true;
+                            message.append("<br><font color='red'><center>User wan't registered because of DB problems!</font>");
+                        }
+                        daoFactory.deleteUserDao(userDao);
                     } else {
                         needRegistration = true;
-                        message.append("<br><font color='red'><center>User wan't registered because of DB problems!</font>");
+                        errorsMsg.append("<ul>");
+                        for (Map.Entry<String, String> entry : errors.entrySet()) {
+                            errorsMsg.append("<li>").append(entry.getKey()).append(" ").append(entry.getValue()).append("</li>");
+                        }
+                        errorsMsg.append("</ul>");
                     }
-                    daoFactory.deleteUserDao(userDao);
-                } else {
-                    needRegistration = true;
-                    session.setAttribute("regErrors", errors);
                 }
             }
+            session.setAttribute("RegMessage", message.toString());
 
             if (needRegistration) {
-                request.getRequestDispatcher("WEB-INF/views/registartion.jsp").forward(request, response);
+                session.setAttribute("login", login);
+                session.setAttribute("name", name);
+                session.setAttribute("address", address);
+                session.setAttribute("comment", comment);
+                session.setAttribute("errorsMsg", errorsMsg);
+
             } else {
-                response.sendRedirect("WEB-INF/views/products.jsp");
+                session.setAttribute("login", null);
+                session.setAttribute("name", null);
+                session.setAttribute("address", null);
+                session.setAttribute("comment", null);
+                session.setAttribute("errorsMsg", null);
             }
-            session.setAttribute("message", message.toString());
+            request.getRequestDispatcher("WEB-INF/view/registration.jsp").forward(request, response);
         }
     }
 

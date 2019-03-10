@@ -9,7 +9,7 @@
                     <div class="productName" id="productName"><c:out value="${product.name}"/></div>
                     <div id="price"><c:out value="${product.price}"/> UAH</div>
                     <div class="productDescription">
-                        <input type="hidden" id="productId" value="${product.id}"/>
+                        <%--<input type="hidden" id="productId" value="${product.id}"/>--%>
                         <input type='button' onclick="minus('${product.id}')" value='-' />
                         <span id='pq${product.id}'>1</span>
                         <input type='button' onclick="plus('${product.id}')" value='+' />

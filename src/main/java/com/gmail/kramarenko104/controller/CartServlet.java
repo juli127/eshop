@@ -5,9 +5,7 @@ import com.gmail.kramarenko104.factoryDao.DaoFactory;
 import com.gmail.kramarenko104.model.Cart;
 import com.gmail.kramarenko104.model.User;
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonWriter;
 import org.apache.log4j.Logger;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,9 +25,9 @@ public class CartServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         logger.debug("CartServlet: ----enter GET -------");
-        HttpSession session = request.getSession();
+        HttpSession session = req.getSession();
         boolean needRefresh = false;
 
         if (session.getAttribute("user") != null) {
@@ -52,12 +50,12 @@ public class CartServlet extends HttpServlet {
             session.setAttribute("message", "You should login to see your cart");
             logger.debug("CartServlet: Current user == null ");
         }
-        request.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(request, response);
+        req.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(req, resp);
         logger.debug("CartServlet: ----exit GET -------");
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
         boolean needRefresh = false;
         logger.debug("CartServlet: ----enter POST -------");
 
@@ -68,30 +66,27 @@ public class CartServlet extends HttpServlet {
 
             //////////////////// CHANGE CART /////////////////////////////////////
             CartDao cartDao = daoFactory.getCartDao();
-            // get info from Ajax POST request (from updateCart.js)
-            String param = request.getParameter("action");
+            // get info from Ajax POST req (from updateCart.js)
+            String param = req.getParameter("action");
             if (param != null && param.length() > 0) {
                 int productId = 0;
                 int quantity = 0;
                 switch (param) {
                     case "add":
                         logger.debug("CatServlet: GOT PARAMETER 'add'....");
-                        productId = Integer.valueOf(request.getParameter("productId"));
-                        quantity = Integer.valueOf(request.getParameter("quantity"));
+                        productId = Integer.valueOf(req.getParameter("productId"));
+                        quantity = Integer.valueOf(req.getParameter("quantity"));
+                        logger.debug("CatServlet: userId: " + currentUser.getId() + ", productId: "+ productId + ", quantity: " + quantity);
                         cartDao.addProduct(currentUser.getId(), productId, quantity);
                         logger.debug("CartServlet: for user '" + currentUser.getName() + "' was added " + quantity + " of productId: " + productId);
                         break;
                     case "remove":
                         logger.debug("CartServlet: GOT PARAMETER 'remove' ");
-                        productId = Integer.valueOf(request.getParameter("productId"));
-                        quantity = Integer.valueOf(request.getParameter("quantity"));
+                        productId = Integer.valueOf(req.getParameter("productId"));
+                        quantity = Integer.valueOf(req.getParameter("quantity"));
                         cartDao.removeProduct(currentUser.getId(), productId, quantity);
                         logger.debug("CartServlet: for user: " + currentUser.getName() + "was removed " + quantity + " of productId " + productId);
                         break;
-                    case "makeOrder":
-                        logger.debug("CartServlet: GOT PARAMETER 'makeOrder' ");
-                        cartDao.deleteCart(Integer.valueOf(request.getParameter("userId")));
-                        logger.debug("CartServlet: for user: " + currentUser.getName() + " order was created and cart was cleared");
                 }
                 needRefresh = true;
             }
@@ -108,13 +103,13 @@ public class CartServlet extends HttpServlet {
 
                 // send JSON with updated Cart to cart.jsp
                 if (userCart != null) {
-                    logger.debug("CartServlet: updated cartSize: " + userCart.getCartSize());
+                    logger.debug("CartServlet: updated itemsCount: " + userCart.getItemsCount());
                     logger.debug("CartServlet: updated totalSum: " + userCart.getTotalSum());
                     String jsondata = new Gson().toJson(userCart);
                     logger.debug("CartServlet: send JSON data to cart.jsp ---->" + jsondata);
-                    PrintWriter out = response.getWriter();
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
+                    PrintWriter out = resp.getWriter();
+                    resp.setContentType("application/json");
+                    resp.setCharacterEncoding("UTF-8");
                     out.print(jsondata);
                     out.flush();
                     out.close();
@@ -126,7 +121,7 @@ public class CartServlet extends HttpServlet {
             logger.debug("CartServlet: Current user == null ");
         }
 
-        request.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(request, response);
+        req.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(req, resp);
         logger.debug("CartServlet: ----exit POST -------");
     }
 

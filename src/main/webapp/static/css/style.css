@@ -114,16 +114,6 @@ a {
 	border: none;
 }
 
-#autoriz {
-    color: #FFFFFF;
-    width: 940px;
-    margin: 0px auto;
-    font-size: 14px;
-    text-align: right;
-	padding: 5px 5px 5px 5px;
-
-}
-
 #sidebar {
 	float: left;
 	width: 120px;
@@ -176,13 +166,14 @@ a {
 
 .productDescription{
     /*width: 210px;*/
+	text-align: center;
 	padding: 0px 0px 2px 5px;
 }
 
 
 #price {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 16px;
+    font-size: 120%;
 	font-weight: bold;
 	text-align: center;
 	color:  #f59506;
@@ -199,14 +190,59 @@ a {
 
 #cart{
 	text-align: center;
-	font-size: 10px;
+    font-size: 120%;
 	margin: 0 0 0 280px;
-}
-
-#info{
-	color:  #f59506;
 }
 
 #tableTitle{
 	color:  #f59506;
+}
+
+#errorMsgText {
+    font-size: 120%;
+	  color: #f50508;
+}
+
+#RegMsg{
+    color: #f50508;
+    font-size: 130%;
+    text-align: center;
+}
+
+#autoriz {
+    color: #63ce29;
+    width: 940px;
+    margin: 0.1%;
+    font-size: 130%;
+    text-align: right;
+    padding: 5px 5px 5px 5px;
+
+}
+
+#myTableFormatting{
+	text-align: left;
+	font-size: 100%;
+	/*margin: 0 0 0 280px;*/
+}
+
+#info{
+    color:  #f59506;
+    font-size: 120%;
+    text-align: center;
+    align-content: center;
+}
+
+/*#title{*/
+    /*color:  #f59506;*/
+    /*font-size: 120%;*/
+    /*text-align: center;*/
+    /*align-content: center;*/
+/*}*/
+
+#myButtonsFormatting {
+	font-size: 150%;
+    align-content: center;
+	style: "shape-rendering: crispEdges";
+    text-align: center;
+    padding: 1%;
 }

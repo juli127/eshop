@@ -40,6 +40,6 @@ VALUES('Nora Naviano Imressive dusty blue',1, 3450, 'Blue evening dress with an 
 
 
 
-INSERT INTO carts (userId, productId, quantity) VALUES(1, 2, 1);
-INSERT INTO carts (userId, productId, quantity) VALUES(1, 1, 1);
-INSERT INTO carts (userId, productId, quantity) VALUES(1, 3, 2);
+INSERT INTO carts (userId, productId, quantity) VALUES(4, 2, 1);
+INSERT INTO carts (userId, productId, quantity) VALUES(4, 1, 1);
+INSERT INTO carts (userId, productId, quantity) VALUES(5, 3, 2);

@@ -8,7 +8,6 @@ import com.gmail.kramarenko104.model.Cart;
 import com.gmail.kramarenko104.model.User;
 import org.apache.log4j.Logger;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,7 +32,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         StringBuilder msgText = new StringBuilder();
-        logger.debug("LoginServlet: =================enter========================");
         boolean showLoginForm = true;
         boolean accessGranted = false;
         UserDao userDao = daoFactory.getUserDao();
@@ -61,6 +59,7 @@ public class LoginServlet extends HttpServlet {
 
                 if ((login != null) && !("".equals(login))) {
                     logger.debug("LoginServlet: login = " + login);
+                    session.setAttribute("login", login);
                     currentUser = userDao.getUserByLogin(login);
                     boolean exist = (currentUser != null);
                     logger.debug("LoginServlet: user is present in DB = " + exist);
@@ -77,38 +76,36 @@ public class LoginServlet extends HttpServlet {
                             attempt = 0;
                             showLoginForm = false;
                             session.setAttribute("user", currentUser);
-                            logger.debug("LoginServlet: User was registered: " + currentUser.getName() + " and passed autorization");
+                            session.setAttribute("login", null);
+                            logger.debug("LoginServlet: User " + currentUser.getName() + " was registered and passed autorization");
                         } else {
                             attempt++;
                             if (attempt >= LOGIN_ATTEMPT_QUANTITY) {
-                                long startTime = 0L;
                                 if (attempt == LOGIN_ATTEMPT_QUANTITY) {
-                                    startTime = System.currentTimeMillis();
+                                    session.setAttribute("startTime", System.currentTimeMillis());
                                 }
-                                waitTime = WAIT_SECONDS - (System.currentTimeMillis() - startTime) / 1000;
+                                waitTime = WAIT_SECONDS - (System.currentTimeMillis() - (Long)session.getAttribute("startTime" ))/ 1000;
                                 if (waitTime > 0) {
-                                    msgText.append("<br><font size=4 color='red'><b> Attempts' limit is exceeded. Login form will be available in " + waitTime + " seconds</b></font>");
+                                    msgText.append("<br><font size=3 color='red'><b> Attempts' limit is exceeded. Login form will be available in " + waitTime + " seconds</b></font>");
                                     showLoginForm = false;
                                 } else {
                                     attempt = 0;
                                     showLoginForm = true;
                                 }
                             } else if (attempt >= 0) {
-                                msgText.append("<b><font size=4 color='red'>Wrong password, try again! (attempt #" + attempt + ")</font>");
+                                msgText.append("<b><font size=3 color='red'>Wrong password, try again! You have 3 attempts. (attempt #" + attempt + ")</font>");
                             }
                         }
                     } else {
                         attempt = 0;
                         showLoginForm = false;
-                        msgText.append("<br><b><font size=3 color='green'><center>You wasn't registered yet.</b>");
-                        msgText.append("<br><b>You need <a href='registration'>register</a> or <a href='login'>login</a> before shopping.</b></font>");
+                        msgText.append("<br>This user wasn't registered yet. <a href='registration'>Register, please,</a> or <a href='login'>login</a>");
                     }
                 } else {
                     attempt = 0;
                 }
             }
         }
-
         // for authorized user get corresponding shopping Cart
         if (accessGranted) {
             CartDao cartDao = daoFactory.getCartDao();
@@ -121,7 +118,7 @@ public class LoginServlet extends HttpServlet {
                 }
                 session.setAttribute("userCart", userCart);
             }
-            if (userCart.getCartSize() > 0) {
+            if (userCart.getItemsCount() > 0) {
                 viewToGo = "./cart";
             }
             daoFactory.deleteCartDao(cartDao);
@@ -130,22 +127,9 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("showLoginForm", showLoginForm);
         session.setAttribute("message", msgText.toString());
         session.setAttribute("attempt", attempt);
-
         daoFactory.deleteUserDao(userDao);
-
-        logger.debug(">>>>>>>>>>>>LoginServlet: go to " + viewToGo);
+        logger.debug("LoginServlet: go to " + viewToGo);
         req.getRequestDispatcher(viewToGo).forward(req, resp);
-        // login was successful, redirect to cart controller
-        //        if (viewToGo.equals("./cart")){
-//    }
-//            logger.debug("LoginServlet: login was successful, redirect to cart controller");
-//            resp.sendRedirect(viewToGo);
-//        }
-//        else { // login was unsuccessful, try again, go to login.jsp
-//            logger.debug("LoginServlet: login was unsuccessful, try again, go to login.jsp");
-//            req.getRequestDispatcher(viewToGo).forward(req, resp);
-//        }
-        logger.debug("LoginServlet: =================exit========================");
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

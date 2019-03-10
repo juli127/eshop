@@ -29,7 +29,7 @@ function buy(userId, productId) {
             },
             dataType: 'json',
             success: function (response) {
-                parseRespose(response);
+                parseCartRespose(response);
             },
             error: function (e) {
                 console.log(e.message);
@@ -55,7 +55,7 @@ function deleteFromCart(productId) {
             },
             dataType: 'json',
             success: function (response) {
-                parseRespose(response);
+                parseCartRespose(response);
             },
             error: function (e) {
                 console.log(e.message);
@@ -78,7 +78,7 @@ function addToCart(productId) {
         },
         dataType: 'json',
         success: function (response) {
-            parseRespose(response);
+            parseCartRespose(response);
         },
         error: function (e) {
             console.log(e.message);
@@ -87,10 +87,10 @@ function addToCart(productId) {
 }
 
 // JSON parser: got JSON string with updated Cart from '/cart' servlet, parse it and update some fields on 'cart.jsp' page
-function parseRespose(responce) {
+function parseCartRespose(responce) {
 
-    // get updated cartSize and totalSum from JSON:
-    document.getElementById('goodsCountField').innerHTML = responce.cartSize;
+    // get updated itemsCount and totalSum from JSON:
+    document.getElementById('itemsCountField').innerHTML = responce.itemsCount;
     document.getElementById('totalSumField').innerHTML = responce.totalSum;
 
     // got from JSON updated cart info -------------------
@@ -114,31 +114,30 @@ function parseRespose(responce) {
             newTable = newTable + "<td><div id=\"productName\">" + JSON.parse(product).name + "</div></td>" +
                 "<td>" + JSON.parse(product).price + " UAH</td>" +
                 "<td><button onclick=\"deleteFromCart('" + pId + "')\">-</button>" +
-                "<span id='q" + pId + "'>" + qnt + "</span>" +
+                "<span id='q" + pId + "'> " + qnt + " </span>" +
                 "<button onclick=\"addToCart('" + pId + "')\">+</button></td></tr>";
         }
         newTable = newTable + "</c:forEach></table>";
     }
     else {
-        // no items in cart, so, cart won't be shown (newTable is "") and clear field "summary" on cart.jsp
+        // no items in cart, so, cart won't be shown (newTable is "") and clear field "summary_info" on cart.jsp
         document.getElementById('summary_info').innerHTML = "";
     }
     document.getElementById('cart_content').innerHTML = newTable;
 }
 
-// make order means that products from 'Cart' object will be moved to 'Order' object. Cart becomes empty.
+// make order means that products from 'Cart' will be moved to 'Order'. Cart becomes empty.
 function makeOrder(userId) {
-    var qnt = document.getElementById('q' + userId).innerHTML;
     $.ajax({
         type: "POST",
         url: "./order",
         data: {
             'action': 'makeOrder',
-            'userID': userId
+            'userId': userId
         },
         dataType: 'json',
         success: function (response) {
-            parseRespose(response);
+            aler('got responce: ' + JSON.stringify(responce))
         },
         error: function (e) {
             console.log(e.message);

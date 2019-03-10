@@ -3,26 +3,27 @@ package com.gmail.kramarenko104.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Cart {
+public class Order {
 
+    private int orderNumber;
     private int userId;
     private int itemsCount;
     private int totalSum;
+    private String status;
     private Map<Product, Integer> products;
 
-    public Cart(int userId) {
-        this.userId = userId;
+    public Order() {
         itemsCount = 0;
         totalSum = 0;
         products = new HashMap<>();
     }
 
-    public int getItemsCount() {
-        return itemsCount;
+    public int getOrderNumber() {
+        return orderNumber;
     }
 
-    public void setItemsCount(int itemsCount) {
-        this.itemsCount = itemsCount;
+    public void setOrderNumber(int orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public int getTotalSum() {
@@ -34,6 +35,14 @@ public class Cart {
     }
     public int getUserId() {
         return userId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setUserId(int userId) {
@@ -48,14 +57,23 @@ public class Cart {
         this.products = products;
     }
 
+    public int getItemsCount() {
+        return itemsCount;
+    }
+
+    public void setItemsCount(int itemsCount) {
+        this.itemsCount = itemsCount;
+    }
 
 
     @Override
     public String toString() {
-        return "Cart{" +
-                "userId:" + userId +
-                ", itemsCount:" + itemsCount +
-                ", totalSum:" + totalSum +
+        return "Order{" +
+                "orderNumber=" + orderNumber +
+                ", userId=" + userId +
+                ", itemsCount=" + itemsCount +
+                ", totalSum=" + totalSum +
+                ", products=" + products +
                 '}';
     }
 }

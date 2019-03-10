@@ -1,60 +1,40 @@
 <%@ include file="includes/header.jsp" %>
 
-<c:if test="${sessionScope.regErrors.size() > 0}" >
-    <c:forEach var="regError" items="${sessionScope.regErrors}">
-        <script>
-            var elem = document.getElementById("regError.getKey()");
-            elem.innerText = regError.getValue();
-            elem.color = '#930';
-        </script>
-    </c:forEach>
-</c:if>
+<br><h3>${RegMessage}</h3><br>
 
-<form method="POST" action="/registration">
-    <table>
+<form method="POST" action="./registration">
+    <table id="myTableFormatting">
         <tr>
             <td>Login</td>
-            <td><input type='email' required name='login' value="" autofocus/></td>
-            <td><span id='regLogin'></span></td>
+            <td><input type='email' required name='login' value='${login}' autofocus placeholder="enter e-mail as login"/></td>
         </tr>
         <tr>
             <td>Password</td>
-            <td><input type='password' name='password'  value=""/></td>
-            <span id='regPassword'></span>
+            <td><input type='password' name='password' value="" placeholder="minimum 4 symbols"/></td>
         </tr>
         <tr>
             <td>Retype Password</td>
             <td><input type='password' name='repassword' value=""/></td>
-            <td><span id='regRepassword'></span></td>
         </tr>
         <tr>
             <td>Name</td>
-            <td><input type='text' name='name' value=""/></td>
-            <td><span id='regName'></span></td>
+            <td><input type='text' name='name' value='${name}'/></td>
         </tr>
         <tr>
             <td>Address</td>
-            <td><input type='text' name='address' value=""/></td>
-            <td><span id='regAddress'></span></td>
+            <td><input type='text' name='address' value='${address}'/></td>
         </tr>
         <tr>
             <td>Comment</td>
-            <td><input type='text' name='comment' value=""/></td>
-            <td><span id='regComment'></span></td>
+            <td><input type='text' name='comment' value='${comment}'/></td>
         </tr>
         <tr>
-            <td colspan = "2">
+            <td colspan = "2" align="right">
                 <input type = "submit" value = "Submit"/>
             </td>
         </tr>
+        <tr><td><span id="errorMsgText"><c:if test="${errorsMsg != null}">${errorsMsg}</c:if></span></td></tr>
     </table>
-    <%--Login: <input type='email' required name='login' value="" autofocus/><span id='regLogin'></span>--%>
-    <%--Password: <input type='password' name='password'  value=""/><span id='regPassword'></span>--%>
-    <%--Retype Password:<input type='password' name='repassword' value=""/><span id='regRepassword'></span>--%>
-    <%--Name:<input type='text' name='name' value=""/><span id='regName'></span>--%>
-    <%--Address:<input type='text' name='address' value=""/><span id='regAddress'></span>--%>
-    <%--Comment:<input type='text' name='comment' value=""/><span id='regComment'></span>--%>
-    <%--<input type='button' value='Submit'/>--%>
 </form>
 
 <%@ include file="includes/footer.jsp" %>

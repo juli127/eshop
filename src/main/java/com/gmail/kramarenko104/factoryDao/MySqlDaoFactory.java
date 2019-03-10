@@ -14,6 +14,7 @@ public class MySqlDaoFactory extends DaoFactory {
     UserDaoMySqlImpl userDaoMySqlImpl;
     ProductDaoMySqlImpl productDaoMySqlImpl;
     CartDaoMySqlImpl cartDaoMySqlImpl;
+    OrderDaoMySqlImpl orderDaoMySqlImpl;
 
     @Override
     public UserDao getUserDao() {
@@ -31,6 +32,12 @@ public class MySqlDaoFactory extends DaoFactory {
     public CartDao getCartDao() {
         cartDaoMySqlImpl = new CartDaoMySqlImpl(conn);
         return cartDaoMySqlImpl;
+    }
+
+    @Override
+    public OrderDao getOrderDao() {
+        orderDaoMySqlImpl = new OrderDaoMySqlImpl(conn);
+        return orderDaoMySqlImpl;
     }
 
     public MySqlDaoFactory() {
@@ -76,6 +83,12 @@ public class MySqlDaoFactory extends DaoFactory {
         }
     }
 
+    @Override
+    public void deleteOrderDao(OrderDao orderDao) {
+        if(orderDao != null){
+            orderDao = null;
+        }
+    }
 
     @Override
     public void closeConnection() {
@@ -83,7 +96,6 @@ public class MySqlDaoFactory extends DaoFactory {
             if (conn != null)
                 conn.close();
             logger.debug("Connection to DB was closed");
-         //   Thread.dumpStack();
         } catch (SQLException e) {
             e.printStackTrace();
         }

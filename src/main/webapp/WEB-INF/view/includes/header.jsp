@@ -3,30 +3,23 @@
 <%@ page isELIgnored="false" %>
 
 <c:set var="user" value="${sessionScope.user}"/>
-<c:set var="username" value="${user.getName()}"/>
+<c:set var="username" value="${user.name}"/>
+
 <c:set var="cart" value="${sessionScope.userCart}"/>
-<c:set var="cartSize" value ="${cart.getCartSize()}"/>
-<c:set var="productsInCart" value="${cart.getProducts()}" />
-<c:set var="totalSum" value ="${cart.getTotalSum()}" />
+<c:set var="itemsCount" value="${cart.itemsCount}"/>
+<c:set var="productsInCart" value="${cart.products}"/>
+<c:set var="totalSum" value="${cart.totalSum}"/>
 
-<%--<br><br>--%>
-<%--<br>header: session: ${session}--%>
-<%--<br>header: userId: ${userId}--%>
-<%--<br>header: sessionScope.user: ${sessionScope.user}--%>
-<%--<br>header: username: ${username}--%>
-<%--<br>header: cartSize: ${cartSize}--%>
+<c:set var="order" value="${sessionScope.newOrder}"/>
+<c:set var="orderItemsCount " value="${order.itemsCount}"/>
+<c:set var="orderTotalSum" value="${order.totalSum}"/>
+<c:set var="productsInOrder" value="${order.products}"/>
+
+<br>header==> order: ${order}
+<br>header==> orderTotalSum: ${orderTotalSum}
+<br>header==> orderItemsCount: ${orderItemsCount}
+<br>header==> productsInOrder: ${productsInOrder}
 <%--<br>header: totalSum: ${totalSum}--%>
-<%--<br>header: sessionScope.message: ${sessionScope.message}--%>
-<%--<br>header: sessionScope.regErrors: ${sessionScope.regErrors}--%>
-
-<c:choose>
-    <c:when test="${username != null}">
-        <c:set var="greeting" value="${username},"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="greeting" value=""/>
-    </c:otherwise>
-</c:choose>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -35,7 +28,6 @@
     <meta name="description" content=""/>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <link href="static/css/style.css" rel="stylesheet" type="text/css" media="screen"/>
-    <%--<link href="static/images/*.jpg" type="image" media="screen"/>--%>
 </head>
 
 <body>
@@ -62,6 +54,7 @@
                                 </c:otherwise>
                             </c:choose>
                             <li><a href="cart">Cart</a></li>
+                            <li><a href="order">Order</a></li>
                         </ul>
                     </div>
                 </td>
@@ -69,27 +62,32 @@
         </table>
     </div>
 
-    <c:if test="${user != null && username.length() > 0}">
     <div id="autoriz">
-        ${greeting} your cart has <span id="goodsCountField">${cartSize==null?0:cartSize}</span></> items
+        <c:choose>
+            <c:when test="${user != null && user.name.length() > 0}">
+                ${username}, your cart has <span id="itemsCountField">${itemsCount==null?0:itemsCount}</span> items
+            </c:when>
+            <c:otherwise>
+            <font color=red>You should register or login before shopping!</font>
+            </c:otherwise>
+        </c:choose>
     </div>
-    </c:if>
 
-    <%--<p>--%>
-    <div class="page" id="page">
-        <div id="sidebar">
-            <table>
-                <tr>DRESSES<a href="products?selectedCategory=1"><img src="static/images/evening_dresses_small.jpg"
-                                                                     alt="" width="120" height="120"
-                                                                     title="DRESSES"/></a></tr>
-                <tr>SHOES<a href="products?selectedCategory=2"><img src="static/images/evening_shoes_small.jpg"
-                                                                    alt="" width="120" height="120" title="SHOES"/></a>
-                </tr>
-                <tr>ACCESSORIES<a href="products?selectedCategory=3"><img src="static/images/aksess1.jpg" alt=""
-                                                                         width="120" height="120"
-                                                                         title="ACCESSORIES"/></a></tr>
-            </table>
-        </div>
-        <!-- end #header -->
+<%--<p>--%>
+<div class="page" id="page">
+    <div id="sidebar">
+        <table>
+            <tr>DRESSES<a href="products?selectedCategory=1"><img src="static/images/evening_dresses_small.jpg"
+                                                                  alt="" width="120" height="120"
+                                                                  title="DRESSES"/></a></tr>
+            <tr>SHOES<a href="products?selectedCategory=2"><img src="static/images/evening_shoes_small.jpg"
+                                                                alt="" width="120" height="120" title="SHOES"/></a>
+            </tr>
+            <tr>ACCESSORIES<a href="products?selectedCategory=3"><img src="static/images/aksess1.jpg" alt=""
+                                                                      width="120" height="120"
+                                                                      title="ACCESSORIES"/></a></tr>
+        </table>
+    </div>
+    <!-- end #header -->
 
-        <div id="content">
+    <div id="content">

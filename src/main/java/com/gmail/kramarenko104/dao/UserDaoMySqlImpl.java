@@ -75,14 +75,14 @@ public class UserDaoMySqlImpl implements UserDao {
 
     @Override
     public User getUserByLogin(String login) {
-        User user = new User();
         ResultSet rs = null;
         boolean exist = false;
+        User user = null;
         logger.debug(">>>UserDao.userExists: check user with login = " + login);
         try (PreparedStatement statement = conn.prepareStatement(GET_USER_BY_LOGIN)) {
             statement.setString(1, login);
             rs = statement.executeQuery();
-            fillUser(rs, user);
+            user = fillUser(rs, user);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -92,16 +92,21 @@ public class UserDaoMySqlImpl implements UserDao {
         return user;
     }
 
-    private void fillUser(ResultSet rs, User user) throws SQLException {
+    private User fillUser(ResultSet rs, User user) throws SQLException {
         while (rs.next()) {
-            user.setId(rs.getInt("id"));
-            user.setLogin(rs.getString("login"));
-            user.setPassword(rs.getString("password"));
-            user.setName(rs.getString("name"));
-            user.setAddress(rs.getString("address"));
-            user.setComment(rs.getString("comment"));
-            logger.debug(">>>UserDao.userExists: GOT user with this login from DB = " + user);
+            String login = rs.getString("login");
+            if (login != null) {
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setLogin(login);
+                user.setPassword(rs.getString("password"));
+                user.setName(rs.getString("name"));
+                user.setAddress(rs.getString("address"));
+                user.setComment(rs.getString("comment"));
+            }
         }
+        logger.debug(">>>UserDao.userExists: GOT user with this login from DB = " + user);
+        return user;
     }
 
     private void closeResultSet(ResultSet rs) {
