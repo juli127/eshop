@@ -11,15 +11,13 @@
 <c:set var="totalSum" value="${cart.totalSum}"/>
 
 <c:set var="order" value="${sessionScope.newOrder}"/>
-<c:set var="orderItemsCount " value="${order.itemsCount}"/>
-<c:set var="orderTotalSum" value="${order.totalSum}"/>
-<c:set var="productsInOrder" value="${order.products}"/>
 
-<br>header==> order: ${order}
-<br>header==> orderTotalSum: ${orderTotalSum}
-<br>header==> orderItemsCount: ${orderItemsCount}
-<br>header==> productsInOrder: ${productsInOrder}
-<%--<br>header: totalSum: ${totalSum}--%>
+<%--<br>user: ${user}--%>
+<%--<br>order: ${order}--%>
+<%--<br>order TotalSum: ${order.totalSum}--%>
+<%--<br>order ItemsCount: ${order.itemsCount}--%>
+<%--<br>cart: productsInOrder: ${productsInOrder}--%>
+<%--<br>cart: totalSum: ${totalSum}--%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -68,7 +66,7 @@
                 ${username}, your cart has <span id="itemsCountField">${itemsCount==null?0:itemsCount}</span> items
             </c:when>
             <c:otherwise>
-            <font color=red>You should register or login before shopping!</font>
+            <font color=red>You should register or login before shopping or see cart/order!</font>
             </c:otherwise>
         </c:choose>
     </div>
