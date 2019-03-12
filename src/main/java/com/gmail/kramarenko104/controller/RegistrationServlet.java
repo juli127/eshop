@@ -31,6 +31,7 @@ public class RegistrationServlet extends HttpServlet {
         req.getRequestDispatcher("WEB-INF/view/registration.jsp").forward(req, resp);
     }
 
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         StringBuilder message = new StringBuilder();

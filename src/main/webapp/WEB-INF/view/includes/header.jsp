@@ -41,6 +41,9 @@
                             </c:choose>
                             <li><a href="cart">Cart</a></li>
                             <li><a href="order">Order</a></li>
+                            <c:if test="${sessionScope.isAdmin}">
+                                <li><a href="admin">Admin</a></li>
+                            </c:if>
                         </ul>
                     </div>
                 </td>

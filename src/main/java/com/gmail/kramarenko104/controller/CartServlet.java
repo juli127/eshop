@@ -48,7 +48,7 @@ public class CartServlet extends HttpServlet {
         req.getRequestDispatcher("WEB-INF/view/cart.jsp").forward(req, resp);
     }
 
-
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         boolean needRefresh = false;
@@ -96,8 +96,6 @@ public class CartServlet extends HttpServlet {
 
                 // send JSON with updated Cart to cart.jsp
                 if (userCart != null) {
-//                    logger.debug("CartServlet: updated itemsCount: " + userCart.getItemsCount());
-//                    logger.debug("CartServlet: updated totalSum: " + userCart.getTotalSum());
                     String jsondata = new Gson().toJson(userCart);
                     logger.debug("CartServlet: send JSON data to cart.jsp ---->" + jsondata);
                     try(PrintWriter out = resp.getWriter()) {

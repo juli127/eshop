@@ -21,6 +21,7 @@ public class LoginServlet extends HttpServlet {
     private static Logger logger = Logger.getLogger(LoginServlet.class);
     private static final int MAX_LOGIN_ATTEMPTS = 3;
     private static final int WAIT_SECONDS_BEFORE_LOGIN_FORM_RELOAD = 15;
+    private static final String adminLog = "admin";
     private DaoFactory daoFactory;
     private int attempt;
 
@@ -37,17 +38,19 @@ public class LoginServlet extends HttpServlet {
         req.getRequestDispatcher("WEB-INF/view/login.jsp").forward(req, resp);
     }
 
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         boolean showLoginForm = true;
         boolean accessGranted = false;
         UserDao userDao = daoFactory.getUserDao();
+        StringBuilder msgText = new StringBuilder();
+        boolean isAdmin = false;
+        User currentUser = null;
 
         String viewToGo = "WEB-INF/view/login.jsp";
         String login = req.getParameter("login");
         String pass = req.getParameter("password");
-        User currentUser = null;
-        StringBuilder msgText = new StringBuilder();
 
         if (session != null) {
             attempt = (session.getAttribute("attempt") == null) ? 0 : (int) session.getAttribute("attempt");
@@ -55,27 +58,20 @@ public class LoginServlet extends HttpServlet {
             // already logged in
             if (session.getAttribute("user") != null) {
                 currentUser = (User) session.getAttribute("user");
-                logger.debug("LoginServlet: user already logged in: " + currentUser);
                 accessGranted = true;
             } // not logged in yet
             else {
-                logger.debug("LoginServlet: user didn't logged in yet");
                 long waitTime = 0;
 
                 if ((login != null) && !("".equals(login))) {
-                    logger.debug("LoginServlet: login = " + login);
                     session.setAttribute("login", login);
                     currentUser = userDao.getUserByLogin(login);
                     boolean exist = (currentUser != null);
-                    logger.debug("LoginServlet: user is present in DB = " + exist);
 
                     if (exist) {
                         String passVerif = UserDaoMySqlImpl.hashString(pass);
-                        logger.debug("LoginServlet: currentUser = " + currentUser);
                         accessGranted = (currentUser.getPassword().equals(passVerif));
-                        logger.debug("LoginServlet: accessGranted = " + accessGranted);
                         showLoginForm = !accessGranted && attempt < MAX_LOGIN_ATTEMPTS;
-                        logger.debug("LoginServlet: showLoginForm = " + showLoginForm);
 
                         if (accessGranted) {
                             attempt = 0;
@@ -83,6 +79,12 @@ public class LoginServlet extends HttpServlet {
                             session.setAttribute("user", currentUser);
                             session.setAttribute("login", null);
                             logger.debug("LoginServlet: User " + currentUser.getName() + " was registered and passed autorization");
+                            if (adminLog.equals(login) && userDao.getUserByLogin(adminLog).getPassword().equals(passVerif)){
+                                isAdmin = true;
+                                logger.debug("LoginServlet: it's admin");
+                            } else {
+                                logger.debug("LoginServlet: it's NOT admin");
+                            }
                         } else {
                             attempt++;
                             if (attempt >= MAX_LOGIN_ATTEMPTS) {
@@ -134,6 +136,7 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("showLoginForm", showLoginForm);
         session.setAttribute("message", msgText.toString());
         session.setAttribute("attempt", attempt);
+        session.setAttribute("isAdmin", isAdmin);
         daoFactory.deleteUserDao(userDao);
 
         if ("WEB-INF/view/login.jsp".equals(viewToGo)){
@@ -141,7 +144,6 @@ public class LoginServlet extends HttpServlet {
         } else {
             resp.sendRedirect(viewToGo);
         }
-
     }
 
     @Override

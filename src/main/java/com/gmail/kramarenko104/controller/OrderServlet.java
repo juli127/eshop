@@ -5,8 +5,6 @@ import com.gmail.kramarenko104.dao.OrderDao;
 import com.gmail.kramarenko104.factoryDao.DaoFactory;
 import com.gmail.kramarenko104.model.Cart;
 import com.gmail.kramarenko104.model.Order;
-import com.gmail.kramarenko104.model.Product;
-import com.gmail.kramarenko104.model.User;
 import com.google.gson.Gson;
 import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
@@ -33,6 +31,7 @@ public class OrderServlet extends HttpServlet {
         req.getRequestDispatcher("WEB-INF/view/order.jsp").forward(req, resp);
     }
 
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         boolean needRefresh = false;
