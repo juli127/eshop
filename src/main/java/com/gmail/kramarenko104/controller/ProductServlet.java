@@ -51,8 +51,6 @@ public class ProductServlet extends HttpServlet {
             session.setAttribute("userCart", null);
         } else {
             User currentUser = (User) session.getAttribute("user");
-            logger.debug("ProductServlet: Current user: " + currentUser.getName());
-
             Cart userCart = null;
             if (session.getAttribute("userCart") == null) {
                 int userId = currentUser.getId();
