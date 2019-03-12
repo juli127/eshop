@@ -4,17 +4,8 @@
 
 <c:set var="user" value="${sessionScope.user}"/>
 <c:set var="username" value="${user.name}"/>
-
 <c:set var="cart" value="${sessionScope.userCart}"/>
 <c:set var="itemsCount" value="${cart.itemsCount}"/>
-<c:set var="productsInCart" value="${cart.products}"/>
-<c:set var="totalSum" value="${cart.totalSum}"/>
-
-<c:set var="order" value="${sessionScope.newOrder}"/>
-
-<%--<br>user: ${user}--%>
-<%--<br>order: ${order}--%>
-<%--<br>cart: ${cart}--%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

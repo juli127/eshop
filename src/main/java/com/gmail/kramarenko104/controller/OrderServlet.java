@@ -9,7 +9,6 @@ import com.gmail.kramarenko104.model.Product;
 import com.gmail.kramarenko104.model.User;
 import com.google.gson.Gson;
 import org.apache.log4j.Logger;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 @WebServlet(name = "OrderServlet", urlPatterns = {"/order"})
 public class OrderServlet extends HttpServlet {
@@ -32,12 +30,6 @@ public class OrderServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        logger.debug("OrderServlet.GET:...enter....");
-        HttpSession session = req.getSession();
-
-        if (session.getAttribute("user") == null) {
-            session.setAttribute("message", "You should login to see your order");
-        }
         req.getRequestDispatcher("WEB-INF/view/order.jsp").forward(req, resp);
     }
 
@@ -64,7 +56,7 @@ public class OrderServlet extends HttpServlet {
                 logger.debug("OrderServlet.POST: !!! new Order was created: " + newOrder);
                 session.setAttribute("newOrder", newOrder);
 
-                // send JSON with new Order to order.jsp
+                // send JSON back with new Order to show on order.jsp
                 if (newOrder != null) {
                     String jsondata = new Gson().toJson(newOrder);
                     logger.debug("OrderServlet: send JSON data to cart.jsp ---->" + jsondata);
@@ -75,6 +67,7 @@ public class OrderServlet extends HttpServlet {
                         out.flush();
                     }
                 }
+
                 daoFactory.deleteOrderDao(orderDao);
                 logger.debug("OrderServlet.POST: delete cart for userId: " + userId);
                 cartDao.deleteCart(Integer.valueOf(userId));

@@ -1,7 +1,9 @@
 <%@ include file="includes/header.jsp" %>
 
-<c:if test="${sessionScope.products.size() > 0}">
-    <c:forEach var="product" items="${sessionScope.products}">
+<c:set var="cartProducts" value="${sessionScope.products}"/>
+
+<c:if test="${cartProducts.size() > 0}">
+    <c:forEach var="product" items="${cartProducts}">
         <div class="productsTable">
             <table border="1">
                 <td>
@@ -9,11 +11,10 @@
                     <div class="productName" id="productName"><c:out value="${product.name}"/></div>
                     <div id="price"><c:out value="${product.price}"/> UAH</div>
                     <div class="productDescription">
-                        <%--<input type="hidden" id="productId" value="${product.id}"/>--%>
                         <input type='button' onclick="minus('${product.id}')" value='-' />
                         <span id='pq${product.id}'>1</span>
                         <input type='button' onclick="plus('${product.id}')" value='+' />
-                        <input type='button' onclick="buy('${sessionScope.user.id}', '${product.id}')" value='Buy'/>
+                        <input type='button' onclick="buy('${user.id}', '${product.id}')" value='Buy'/>
                     </div>
                 </td>
             </table>

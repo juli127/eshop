@@ -1,5 +1,7 @@
 <%@ include file="includes/header.jsp" %>
 
+<c:set var="order" value="${sessionScope.newOrder}"/>
+
 <c:if test="${user != null}">
 <c:choose>
     <c:when test="${order != null}">

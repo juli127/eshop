@@ -1,5 +1,8 @@
 <%@ include file="includes/header.jsp" %>
 
+<c:set var="productsInCart" value="${cart.products}"/>
+<c:set var="totalSum" value="${cart.totalSum}"/>
+
     <c:if test="${itemsCount > 0}">
         <div id="cart_content">
         <table id="cart" border=1>

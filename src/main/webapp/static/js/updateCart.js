@@ -148,6 +148,7 @@ function makeOrder(userId) {
         dataType: 'json',
         success: function (responce) {
             // alert('got responce: ' + JSON.stringify(responce));
+            // send from cart.jsp to Order servlet
             window.location.href="./order"
         },
         error: function (e) {

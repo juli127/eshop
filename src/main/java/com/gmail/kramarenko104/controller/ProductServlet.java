@@ -2,16 +2,12 @@ package com.gmail.kramarenko104.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import com.gmail.kramarenko104.dao.CartDao;
 import com.gmail.kramarenko104.dao.ProductDao;
 import com.gmail.kramarenko104.factoryDao.DaoFactory;
@@ -47,7 +43,7 @@ public class ProductServlet extends HttpServlet {
         }
         session.setAttribute("selectedCateg", selectedCateg);
         session.setAttribute("products", products);
-//        products.forEach(e -> System.out.println(e));
+        // products.forEach(e -> logger.debug(e));
         daoFactory.deleteProductDao(productDao);
 
         // be sure that when we enter on the main application page (products.jsp), user's info is full and correct
@@ -78,7 +74,6 @@ public class ProductServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
     }
 
 }

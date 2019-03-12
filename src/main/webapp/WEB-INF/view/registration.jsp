@@ -18,11 +18,11 @@
         </tr>
         <tr>
             <td>Name</td>
-            <td><input type='text' name='name' value='${name}'/></td>
+            <td><input type='text' name='name' value='${name}' placeholder="required"/></td>
         </tr>
         <tr>
             <td>Address</td>
-            <td><input type='text' name='address' value='${address}'/></td>
+            <td><input type='text' name='address' value='${address}' placeholder="required"/></td>
         </tr>
         <tr>
             <td>Comment</td>

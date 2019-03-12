@@ -7,7 +7,6 @@ import com.gmail.kramarenko104.factoryDao.DaoFactory;
 import com.gmail.kramarenko104.model.Cart;
 import com.gmail.kramarenko104.model.User;
 import org.apache.log4j.Logger;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,10 +19,10 @@ import java.io.IOException;
 public class LoginServlet extends HttpServlet {
 
     private static Logger logger = Logger.getLogger(LoginServlet.class);
-    private int attempt;
+    private static final int MAX_LOGIN_ATTEMPTS = 3;
+    private static final int WAIT_SECONDS_BEFORE_LOGIN_FORM_RELOAD = 15;
     private DaoFactory daoFactory;
-    private int LOGIN_ATTEMPT_QUANTITY = 3;
-    private int WAIT_SECONDS = 15;
+    private int attempt;
 
     public LoginServlet() throws ServletException, IOException {
         daoFactory = DaoFactory.getSpecificDao();
@@ -31,18 +30,24 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        StringBuilder msgText = new StringBuilder();
+        HttpSession session = req.getSession();
+        session.setAttribute("showLoginForm", true);
+        session.setAttribute("message", null);
+        session.setAttribute("attempt", null);
+        req.getRequestDispatcher("WEB-INF/view/login.jsp").forward(req, resp);
+    }
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
         boolean showLoginForm = true;
         boolean accessGranted = false;
         UserDao userDao = daoFactory.getUserDao();
 
         String viewToGo = "WEB-INF/view/login.jsp";
-        HttpSession session = req.getSession();
         String login = req.getParameter("login");
         String pass = req.getParameter("password");
-        logger.debug("LoginServlet: login param: " + login);
-        logger.debug("LoginServlet: pass param: " + pass);
         User currentUser = null;
+        StringBuilder msgText = new StringBuilder();
 
         if (session != null) {
             attempt = (session.getAttribute("attempt") == null) ? 0 : (int) session.getAttribute("attempt");
@@ -69,7 +74,7 @@ public class LoginServlet extends HttpServlet {
                         logger.debug("LoginServlet: currentUser = " + currentUser);
                         accessGranted = (currentUser.getPassword().equals(passVerif));
                         logger.debug("LoginServlet: accessGranted = " + accessGranted);
-                        showLoginForm = !accessGranted && attempt < LOGIN_ATTEMPT_QUANTITY;
+                        showLoginForm = !accessGranted && attempt < MAX_LOGIN_ATTEMPTS;
                         logger.debug("LoginServlet: showLoginForm = " + showLoginForm);
 
                         if (accessGranted) {
@@ -80,11 +85,11 @@ public class LoginServlet extends HttpServlet {
                             logger.debug("LoginServlet: User " + currentUser.getName() + " was registered and passed autorization");
                         } else {
                             attempt++;
-                            if (attempt >= LOGIN_ATTEMPT_QUANTITY) {
-                                if (attempt == LOGIN_ATTEMPT_QUANTITY) {
+                            if (attempt >= MAX_LOGIN_ATTEMPTS) {
+                                if (attempt == MAX_LOGIN_ATTEMPTS) {
                                     session.setAttribute("startTime", System.currentTimeMillis());
                                 }
-                                waitTime = WAIT_SECONDS - (System.currentTimeMillis() - (Long)session.getAttribute("startTime" ))/ 1000;
+                                waitTime = WAIT_SECONDS_BEFORE_LOGIN_FORM_RELOAD - (System.currentTimeMillis() - (Long)session.getAttribute("startTime" ))/ 1000;
                                 if (waitTime > 0) {
                                     msgText.append("<br><font size=3 color='red'><b> Attempts' limit is exceeded. Login form will be available in " + waitTime + " seconds</b></font>");
                                     showLoginForm = false;
@@ -120,6 +125,8 @@ public class LoginServlet extends HttpServlet {
             }
             if (userCart.getItemsCount() > 0) {
                 viewToGo = "./cart";
+            } else {
+                viewToGo = "./product";
             }
             daoFactory.deleteCartDao(cartDao);
         }
@@ -128,12 +135,13 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("message", msgText.toString());
         session.setAttribute("attempt", attempt);
         daoFactory.deleteUserDao(userDao);
-        logger.debug("LoginServlet: go to " + viewToGo);
-        req.getRequestDispatcher(viewToGo).forward(req, resp);
-    }
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
+        if ("WEB-INF/view/login.jsp".equals(viewToGo)){
+            req.getRequestDispatcher(viewToGo).forward(req, resp);
+        } else {
+            resp.sendRedirect(viewToGo);
+        }
+
     }
 
     @Override

@@ -5,8 +5,6 @@ import com.gmail.kramarenko104.factoryDao.DaoFactory;
 import com.gmail.kramarenko104.model.Cart;
 import com.gmail.kramarenko104.model.User;
 import org.apache.log4j.Logger;
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,47 +28,39 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/view/registration.jsp");
-        rd.forward(req, resp);
+        req.getRequestDispatcher("WEB-INF/view/registration.jsp").forward(req, resp);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
         StringBuilder message = new StringBuilder();
-        boolean needRegistration = false;
-
-        String login = request.getParameter("login");
-        String pass = request.getParameter("password");
-        String repass = request.getParameter("repassword");
-        String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String comment = request.getParameter("comment");
         Map<String, String> errors = new HashMap<>();
         StringBuilder errorsMsg = new StringBuilder();
+        boolean needRegistration = true;
+        boolean userExist = false;
+
+        String login = req.getParameter("login");
+        String pass = req.getParameter("password");
+        String repass = req.getParameter("repassword");
+        String name = req.getParameter("name");
+        String address = req.getParameter("address");
+        String comment = req.getParameter("comment");
 
         if (session != null) {
-            if (session.getAttribute("user") != null) { // already logged in
-                logger.debug("RegisrtServlet: some user is already logged in");
-                User currentUser = (User) session.getAttribute("user");
-                String currentLogin = currentUser.getLogin();
-                if (currentLogin.equals(login)) {
-                    logger.debug("RegisrtServlet: logged-in user tries to register. Just forward him to page with products");
-                    message.append("<br><b><font color='green'><center>Hi, " + currentUser.getName() + ". <br>You have registered already.</font><b>");
-                } else { // we should logout and login as the new user
-                    logger.debug("RegisrtServlet: try to register the new user when the previous one is logged in. Logout and forward to registartion.jsp");
-                    session.invalidate();
-                    session = request.getSession();
-                    needRegistration = true;
-                }
-            } else {// not logged in yet
-                if (!"".equals(login)) {
+            if (!"".equals(login)) {
+                // check if user with this login/password is already registered
+                UserDao userDao = daoFactory.getUserDao();
+                userExist = (userDao.getUserByLogin(login) != null);
+
+                // user with this login/password not registered yet
+                if (!userExist) {
+                    logger.debug("RegisrtServlet: user with entered login wasn't registered yet");
                     Map<String, String> regData = new HashMap<>();
                     regData.put("login", login);
                     regData.put("pass", pass);
                     regData.put("repass", repass);
                     regData.put("name", name);
                     regData.put("address", address);
-                    logger.debug("RegisrtServlet: no one user is logged in. Just check entered fields from registration form");
 
                     for (Map.Entry<String, String> entry : regData.entrySet()) {
                         logger.debug("RegisrtServlet: user entered: " + entry.getKey() + ": " + entry.getValue());
@@ -85,15 +75,12 @@ public class RegistrationServlet extends HttpServlet {
                     String patternString = "([0-9a-zA-Z]+){4,}";
                     Pattern pattern = Pattern.compile(patternString);
                     Matcher matcher = pattern.matcher(pass);
-                    logger.debug("RegisrtServlet: pass.length(): " + pass.length());
-                    logger.debug("RegisrtServlet: repass.length(): " + repass.length());
                     if (pass.length() > 0 && !matcher.matches()) {
                         errors.put("", "Password should have minimum 4 symbols!");
                     }
 
                     if (errors.size() == 0) {
-                        logger.debug("RegisrtServlet: anything was entered correctly");
-                        UserDao userDao = daoFactory.getUserDao();
+                        // all fields on registration form are filled correctly
                         User newUser = new User();
                         newUser.setLogin(login);
                         newUser.setName(name);
@@ -106,13 +93,14 @@ public class RegistrationServlet extends HttpServlet {
                             message.append("<br><font color='green'><center>Hi, " + name + "! <br>You have been registered. You can shopping now!</font>");
                             session.setAttribute("user", newUser);
                             session.setAttribute("userCart", new Cart(newUser.getId()));
+                            needRegistration = false;
                         } else {
-                            needRegistration = true;
-                            message.append("<br><font color='red'><center>User wan't registered because of DB problems!</font>");
+                            message.append("<br><font color='red'><center>User wan't registered because of DB problems! Try a bit later.</font>");
                         }
-                        daoFactory.deleteUserDao(userDao);
-                    } else {
-                        needRegistration = true;
+                    }
+                    // some fields on registration form are filled in wrong way
+                    else {
+                        // prepare errorsMsg to show on registration.jsp
                         errorsMsg.append("<ul>");
                         for (Map.Entry<String, String> entry : errors.entrySet()) {
                             errorsMsg.append("<li>").append(entry.getKey()).append(" ").append(entry.getValue()).append("</li>");
@@ -120,24 +108,36 @@ public class RegistrationServlet extends HttpServlet {
                         errorsMsg.append("</ul>");
                     }
                 }
+                // user with this login/password was registered already
+                else {
+                    needRegistration = false;
+                }
+                daoFactory.deleteUserDao(userDao);
             }
+
             session.setAttribute("RegMessage", message.toString());
 
             if (needRegistration) {
+                // save some entered fields not to force user enter them again
                 session.setAttribute("login", login);
                 session.setAttribute("name", name);
                 session.setAttribute("address", address);
                 session.setAttribute("comment", comment);
                 session.setAttribute("errorsMsg", errorsMsg);
+                req.getRequestDispatcher("WEB-INF/view/registration.jsp").forward(req, resp);
 
             } else {
-                session.setAttribute("login", null);
                 session.setAttribute("name", null);
                 session.setAttribute("address", null);
                 session.setAttribute("comment", null);
                 session.setAttribute("errorsMsg", null);
+
+                // user with this login/password is already registered, send user to /login
+                if (userExist) {
+                    logger.debug("RegisrtServlet: user was already registered before, send to login page");
+                    resp.sendRedirect("./login");
+                }
             }
-            request.getRequestDispatcher("WEB-INF/view/registration.jsp").forward(request, response);
         }
     }
 
