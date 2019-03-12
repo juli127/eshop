@@ -32,12 +32,11 @@ public class OrderServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        logger.debug("OrderServlet.GET:...enter....");
+//        logger.debug("OrderServlet.GET:...enter....");
         HttpSession session = req.getSession();
 
         if (session.getAttribute("user") == null) {
             session.setAttribute("message", "You should login to see your order");
-            logger.debug("OrderServlet: Current user == null ");
         }
         req.getRequestDispatcher("WEB-INF/view/order.jsp").forward(req, resp);
     }
@@ -45,14 +44,13 @@ public class OrderServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         boolean needRefresh = false;
-
-        logger.debug("OrderServlet.POST:...enter....");
         if (session.getAttribute("user") != null) {
-            // get info from Ajax POST request (from updateCart.js)
+
+            // get info from Ajax POST request (updateCart.js)
             String param = req.getParameter("action");
             if (param != null && (param.equals("makeOrder"))) {
                 int userId = Integer.valueOf(req.getParameter("userId"));
-                logger.debug("OrderServlet.POST: got from updateCart.js POST request userId: " + userId);
+                logger.debug("OrderServlet.POST: got userId from POST request: " + userId);
 
                 OrderDao orderDao = daoFactory.getOrderDao();
                 CartDao cartDao = daoFactory.getCartDao();
@@ -66,30 +64,24 @@ public class OrderServlet extends HttpServlet {
                 logger.debug("OrderServlet.POST: !!! new Order was created: " + newOrder);
                 session.setAttribute("newOrder", newOrder);
 
-                // send JSON with new Order to cart.jsp
+                // send JSON with new Order to order.jsp
                 if (newOrder != null) {
                     String jsondata = new Gson().toJson(newOrder);
                     logger.debug("OrderServlet: send JSON data to cart.jsp ---->" + jsondata);
-                    PrintWriter out = resp.getWriter();
-                    resp.setContentType("application/json");
-                    resp.setCharacterEncoding("UTF-8");
-                    out.print(jsondata);
-                    out.flush();
-                    out.close();
+                    try(PrintWriter out = resp.getWriter()) {
+                        resp.setContentType("application/json");
+                        resp.setCharacterEncoding("UTF-8");
+                        out.print(jsondata);
+                        out.flush();
+                    }
                 }
-
                 daoFactory.deleteOrderDao(orderDao);
-
                 logger.debug("OrderServlet.POST: delete cart for userId: " + userId);
                 cartDao.deleteCart(Integer.valueOf(userId));
                 session.setAttribute("userCart", null);
                 daoFactory.deleteCartDao(cartDao);
             }
-        } else {
-            session.setAttribute("message", "You should login to see your order");
         }
-        req.getRequestDispatcher("WEB-INF/view/order.jsp").forward(req, resp);
-        logger.debug("OrderServlet.POST: ---exit---");
     }
 
     @Override

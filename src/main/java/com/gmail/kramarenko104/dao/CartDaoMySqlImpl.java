@@ -98,7 +98,7 @@ public class CartDaoMySqlImpl implements CartDao {
                 e.printStackTrace();
             }
         }
-        else { //there isn't such product in dB, add it
+        else { // there isn't such product in dB, add it
             logger.debug("++++CartDao.addProduct: there isn't such product in dB, add it");
             logger.debug("++++CartDao.addProduct: userId: " + userId + ", productId: " + productId + ", addQuantity: " + addQuantity);
             try (PreparedStatement pst = conn.prepareStatement(ADD_TO_CART)) {

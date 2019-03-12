@@ -90,7 +90,7 @@ public class CartServlet extends HttpServlet {
                 }
                 needRefresh = true;
             }
-            ///////////////// REFRESH CART's characteristics if refresh need
+            //  REFRESH CART's characteristics if refresh need
             logger.debug("CartServlet: needRefresh ==  " + needRefresh);
             Cart userCart = null;
             if (session.getAttribute("userCart") == null || needRefresh) {
@@ -107,12 +107,12 @@ public class CartServlet extends HttpServlet {
                     logger.debug("CartServlet: updated totalSum: " + userCart.getTotalSum());
                     String jsondata = new Gson().toJson(userCart);
                     logger.debug("CartServlet: send JSON data to cart.jsp ---->" + jsondata);
-                    PrintWriter out = resp.getWriter();
-                    resp.setContentType("application/json");
-                    resp.setCharacterEncoding("UTF-8");
-                    out.print(jsondata);
-                    out.flush();
-                    out.close();
+                    try(PrintWriter out = resp.getWriter()) {
+                        resp.setContentType("application/json");
+                        resp.setCharacterEncoding("UTF-8");
+                        out.print(jsondata);
+                        out.flush();
+                    }
                 }
             }
             daoFactory.deleteCartDao(cartDao);

@@ -32,6 +32,7 @@ public class Cart {
     public void setTotalSum(int totalSum) {
         this.totalSum = totalSum;
     }
+
     public int getUserId() {
         return userId;
     }
@@ -47,7 +48,6 @@ public class Cart {
     public void setProducts(Map<Product, Integer> products) {
         this.products = products;
     }
-
 
 
     @Override

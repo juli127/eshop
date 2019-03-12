@@ -86,8 +86,16 @@ function addToCart(productId) {
     });
 }
 
-// JSON parser: got JSON string with updated Cart from '/cart' servlet, parse it and update some fields on 'cart.jsp' page
+// JSON parser: got JSON string with updated Cart from '/cart' servlet
+// parse it and update table with cart's items on 'cart.jsp' page
 function parseCartRespose(responce) {
+    // responce has JSON like this:
+    // {
+    // "userId":9,
+    // "itemsCount":2,
+    // "totalSum":6900,
+    // "products":{"{\"productId\":1,\"name\":\"Nora Naviano Imressive dusty blue\",\"price\":3450}":2}
+    // }
 
     // get updated itemsCount and totalSum from JSON:
     document.getElementById('itemsCountField').innerHTML = responce.itemsCount;
@@ -95,10 +103,11 @@ function parseCartRespose(responce) {
 
     // got from JSON updated cart info -------------------
     var cartJSONmap = responce.products;
+    // cartJSONmap has info like  {"{\"productId\":1,\"name\":\"Nora Naviano Imressive dusty blue\",\"price\":3450}":2}
     var recordsCount = Object.keys(cartJSONmap).length;
+    // create table that represents new updated cart for cart.jsp
     var newTable = "";
 
-    // repaint updated cart on cart.jsp
     // repaint all table to avoid the situation when the row with 0 items is shown
     if (recordsCount > 0) {
         newTable = "<table id=\"cart\" border=1>" +
@@ -109,6 +118,7 @@ function parseCartRespose(responce) {
         for (var i = 0; i < recordsCount; i++) {
             var product = Object.keys(cartJSONmap)[i];
             var qnt = Object.values(cartJSONmap)[i];
+
             var pId = JSON.parse(product).productId;
 
             newTable = newTable + "<td><div id=\"productName\">" + JSON.parse(product).name + "</div></td>" +
@@ -120,13 +130,13 @@ function parseCartRespose(responce) {
         newTable = newTable + "</c:forEach></table>";
     }
     else {
-        // no items in cart, so, cart won't be shown (newTable is "") and clear field "summary_info" on cart.jsp
+        // no items in cart, so, cart won't be shown at all
         document.getElementById('summary_info').innerHTML = "";
     }
     document.getElementById('cart_content').innerHTML = newTable;
 }
 
-// make order means that products from 'Cart' will be moved to 'Order'. Cart becomes empty.
+// make order means that products from object 'Cart' will be moved to object 'Order'. Cart becomes empty.
 function makeOrder(userId) {
     $.ajax({
         type: "POST",
@@ -136,8 +146,9 @@ function makeOrder(userId) {
             'userId': userId
         },
         dataType: 'json',
-        success: function (response) {
-            aler('got responce: ' + JSON.stringify(responce))
+        success: function (responce) {
+            // alert('got responce: ' + JSON.stringify(responce));
+            window.location.href="./order"
         },
         error: function (e) {
             console.log(e.message);

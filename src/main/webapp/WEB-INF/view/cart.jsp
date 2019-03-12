@@ -3,13 +3,13 @@
     <c:if test="${itemsCount > 0}">
         <div id="cart_content">
         <table id="cart" border=1>
-            <%--<div id="tableTitle">--%>
+            <span id="tableTitle">
                 <tr>
                     <td>Product's name</td>
                     <td>Price</td>
                     <td>Quantity</td>
                 </tr>
-            <%--</div>--%>
+            </span>
 
             <c:forEach var="purchase" items="${productsInCart}">
                 <tr>
@@ -34,8 +34,6 @@
         <div id="info">Total cart's sum: <span id="totalSumField">${totalSum==null?0:totalSum}</span> UAH</div>
         <span id="myButtonsFormatting"><button onclick="makeOrder('${cart.userId}')">Make order</button></span>
         </div>
-
     </c:if>
-
 
 <%@ include file="includes/footer.jsp" %>
