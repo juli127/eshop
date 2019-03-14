@@ -10,11 +10,42 @@ import java.util.ResourceBundle;
 public class MySqlDaoFactory extends DaoFactory {
 
     private static Logger logger = Logger.getLogger(MySqlDaoFactory.class);
-    Connection conn;
     UserDaoMySqlImpl userDaoMySqlImpl;
     ProductDaoMySqlImpl productDaoMySqlImpl;
     CartDaoMySqlImpl cartDaoMySqlImpl;
     OrderDaoMySqlImpl orderDaoMySqlImpl;
+    Connection conn;
+
+    public MySqlDaoFactory() {
+        ResourceBundle config = ResourceBundle.getBundle("db");
+        try {
+            Class.forName(config.getString("driverClassName")).newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        logger.debug("Connecting...");
+        try {
+            StringBuilder connStr = new StringBuilder();
+            connStr.append(config.getString("url"))
+                    .append("/").append(config.getString("dbName"))
+                    .append("?").append("user=").append(config.getString("usr"))
+                    .append("&password=").append(config.getString("password"));
+            logger.debug("Connection string:" + connStr.toString());
+
+            conn = DriverManager.getConnection(connStr.toString());
+            logger.debug("Connection obtained");
+
+        } catch (SQLException ex) {
+            logger.debug("Connection to DB failed...");
+            logger.debug("SQLException: " + ex.getMessage());
+            logger.debug("SQLState: " + ex.getSQLState());
+            logger.debug("VendorError: " + ex.getErrorCode());
+        }
+    }
 
     @Override
     public UserDao getUserDao() {
@@ -40,52 +71,30 @@ public class MySqlDaoFactory extends DaoFactory {
         return orderDaoMySqlImpl;
     }
 
-    public MySqlDaoFactory() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (Exception ex) {
-        }
-        logger.debug("Connection to DB .....");
-        try {
-            ResourceBundle config = ResourceBundle.getBundle("config");
-            logger.debug("Connection string:" + "jdbc:mysql://" + config.getString("host") + "/" + config.getString("db")
-                    + "?" + "user=" + config.getString("usr") + "&password=" + config.getString("psw"));
-            conn = DriverManager.getConnection("jdbc:mysql://" + config.getString("host") + "/" + config.getString("db")
-                    + "?" + "user=" + config.getString("usr") + "&password=" + config.getString("psw"));
-
-            logger.debug("Connection obtained");
-        } catch (SQLException ex) {
-            logger.debug("Connection to DB failed...");
-            logger.debug("SQLException: " + ex.getMessage());
-            logger.debug("SQLState: " + ex.getSQLState());
-            logger.debug("VendorError: " + ex.getErrorCode());
-        }
-    }
-
     @Override
     public void deleteUserDao(UserDao userDao) {
-        if(userDao != null){
+        if (userDao != null) {
             userDao = null;
         }
     }
 
     @Override
     public void deleteProductDao(ProductDao productDao) {
-        if(productDao != null){
+        if (productDao != null) {
             productDao = null;
         }
     }
 
     @Override
     public void deleteCartDao(CartDao cartDao) {
-        if(cartDao != null){
+        if (cartDao != null) {
             cartDao = null;
         }
     }
 
     @Override
     public void deleteOrderDao(OrderDao orderDao) {
-        if(orderDao != null){
+        if (orderDao != null) {
             orderDao = null;
         }
     }

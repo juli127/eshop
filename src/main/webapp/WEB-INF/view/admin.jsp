@@ -5,7 +5,7 @@
 <c:if test="${users != null}">
     <div id="info">All users:</div><br><br>
     <table id="cart" border=1>
-        <tr>
+        <tr id="tableTitle">
             <td>Login</td>
             <td>Name</td>
             <td>Address</td>

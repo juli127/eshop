@@ -8,20 +8,8 @@ import java.util.ResourceBundle;
 
 public abstract class DaoFactory {
 
-	public abstract UserDao getUserDao();
-	public abstract ProductDao getProductDao();
-	public abstract CartDao getCartDao();
-	public abstract OrderDao getOrderDao();
-
-	public abstract void deleteUserDao(UserDao userDao);
-	public abstract void deleteProductDao(ProductDao productDao);
-	public abstract void deleteCartDao(CartDao cartDao);
-	public abstract void deleteOrderDao(OrderDao orderDao);
-
-	public abstract void closeConnection();
-
 	public static DaoFactory getSpecificDao(){
-		ResourceBundle config = ResourceBundle.getBundle("config");
+		ResourceBundle config = ResourceBundle.getBundle("db");
 		DaoFactory daoFactory = null;
 		try {
 			daoFactory = (DaoFactory) Class.forName(config.getString("factoryClass")).newInstance();
@@ -35,4 +23,15 @@ public abstract class DaoFactory {
 		return daoFactory;
 	}
 
+    public abstract UserDao getUserDao();
+    public abstract ProductDao getProductDao();
+    public abstract CartDao getCartDao();
+    public abstract OrderDao getOrderDao();
+
+    public abstract void deleteUserDao(UserDao userDao);
+    public abstract void deleteProductDao(ProductDao productDao);
+    public abstract void deleteCartDao(CartDao cartDao);
+    public abstract void deleteOrderDao(OrderDao orderDao);
+
+    public abstract void closeConnection();
 }

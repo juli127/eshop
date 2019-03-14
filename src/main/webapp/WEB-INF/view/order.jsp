@@ -9,7 +9,7 @@
         <br><br>
 
         <table id="cart" border=1>
-                <tr>
+                <tr id="tableTitle">
                     <td>Product's name</td>
                     <td>Price</td>
                     <td>Quantity</td>

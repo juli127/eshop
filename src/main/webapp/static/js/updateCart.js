@@ -88,27 +88,33 @@ function addToCart(productId) {
 
 // JSON parser: got JSON string with updated Cart from '/cart' servlet
 // parse it and update table with cart's items on 'cart.jsp' page
-function parseCartRespose(responce) {
-    // responce has JSON like this:
+function parseCartRespose(response) {
+    // response has JSON like this one:
     // {
     // "userId":9,
-    // "itemsCount":2,
-    // "totalSum":6900,
-    // "products":{"{\"productId\":1,\"name\":\"Nora Naviano Imressive dusty blue\",\"price\":3450}":2}
+    // "itemsCount":3,
+    // "totalSum":5854,
+    // "products":
+    //     {
+    //      "{"productId":4,"name":"Shoes ROSE GOLD Rock Glitter Ankle","price":2100}"  :  2,
+    //      "{"productId":2,"name":"Very berry marsala","price":1654}"  :  1
+    //     }
     // }
 
     // get updated itemsCount and totalSum from JSON:
-    document.getElementById('itemsCountField').innerHTML = responce.itemsCount;
-    document.getElementById('totalSumField').innerHTML = responce.totalSum;
+    document.getElementById('itemsCountField').innerHTML = response.itemsCount;
+    document.getElementById('totalSumField').innerHTML = response.totalSum;
 
     // got from JSON updated cart info -------------------
-    var cartJSONmap = responce.products;
-    // cartJSONmap has info like  {"{\"productId\":1,\"name\":\"Nora Naviano Imressive dusty blue\",\"price\":3450}":2}
+    var cartJSONmap = response.products;
+    // cartJSONmap has pairs like Product{productId,name,price} : quantity
+    // for ex., {"{"productId":1,"name":"Nora Naviano Imressive dusty blue","price":3450}"  :  2}
     var recordsCount = Object.keys(cartJSONmap).length;
     // create table that represents new updated cart for cart.jsp
     var newTable = "";
 
     // repaint all table to avoid the situation when the row with 0 items is shown
+    // as result, when cart has no items at all, the hole table disappears
     if (recordsCount > 0) {
         newTable = "<table id=\"cart\" border=1>" +
             "<div id='tableTitle'><tr><td>Product's name</td><td>Price</td><td>Quantity</td></tr></div>" +
@@ -146,8 +152,8 @@ function makeOrder(userId) {
             'userId': userId
         },
         dataType: 'json',
-        success: function (responce) {
-            // alert('got responce: ' + JSON.stringify(responce));
+        success: function (response) {
+            // alert('got response: ' + JSON.stringify(response));
             // send from cart.jsp to Order servlet
             window.location.href="./order"
         },
