@@ -7,16 +7,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-public class MySqlDaoFactory extends DaoFactory {
+public class MySqlJDBCDaoFactory extends DaoFactory {
 
-    private static Logger logger = Logger.getLogger(MySqlDaoFactory.class);
+    private static Logger logger = Logger.getLogger(MySqlJDBCDaoFactory.class);
     UserDaoMySqlImpl userDaoMySqlImpl;
     ProductDaoMySqlImpl productDaoMySqlImpl;
     CartDaoMySqlImpl cartDaoMySqlImpl;
     OrderDaoMySqlImpl orderDaoMySqlImpl;
     Connection conn;
 
-    public MySqlDaoFactory() {
+    public MySqlJDBCDaoFactory() {
         ResourceBundle config = ResourceBundle.getBundle("db");
         try {
             Class.forName(config.getString("driverClassName")).newInstance();
@@ -32,7 +32,7 @@ public class MySqlDaoFactory extends DaoFactory {
             StringBuilder connStr = new StringBuilder();
             connStr.append(config.getString("url"))
                     .append("/").append(config.getString("dbName"))
-                    .append("?").append("user=").append(config.getString("usr"))
+                    .append("?").append("user=").append(config.getString("username"))
                     .append("&password=").append(config.getString("password"));
             logger.debug("Connection string:" + connStr.toString());
 
@@ -76,6 +76,7 @@ public class MySqlDaoFactory extends DaoFactory {
         if (userDao != null) {
             userDao = null;
         }
+        closeConnection();
     }
 
     @Override
@@ -83,6 +84,7 @@ public class MySqlDaoFactory extends DaoFactory {
         if (productDao != null) {
             productDao = null;
         }
+        closeConnection();
     }
 
     @Override
@@ -90,6 +92,7 @@ public class MySqlDaoFactory extends DaoFactory {
         if (cartDao != null) {
             cartDao = null;
         }
+        closeConnection();
     }
 
     @Override
@@ -97,10 +100,10 @@ public class MySqlDaoFactory extends DaoFactory {
         if (orderDao != null) {
             orderDao = null;
         }
+        closeConnection();
     }
 
-    @Override
-    public void closeConnection() {
+    private void closeConnection() {
         try {
             if (conn != null)
                 conn.close();

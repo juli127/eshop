@@ -75,9 +75,4 @@ public class OrderServlet extends HttpServlet {
             }
         }
     }
-
-    @Override
-    public void destroy() {
-        daoFactory.closeConnection();
-    }
 }

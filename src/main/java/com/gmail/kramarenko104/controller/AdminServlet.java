@@ -38,10 +38,4 @@ public class AdminServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     }
-
-    @Override
-    public void destroy() {
-        daoFactory.closeConnection();
-    }
-
 }

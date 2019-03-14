@@ -141,10 +141,4 @@ public class RegistrationServlet extends HttpServlet {
             }
         }
     }
-
-    @Override
-    public void destroy() {
-        daoFactory.closeConnection();
-    }
-
 }

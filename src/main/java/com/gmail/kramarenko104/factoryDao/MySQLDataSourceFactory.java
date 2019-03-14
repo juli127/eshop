@@ -11,6 +11,10 @@ import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.apache.log4j.Logger;
 import java.sql.*;
+import java.util.ResourceBundle;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.*;
 
 public class MySQLDataSourceFactory extends DaoFactory {
@@ -20,58 +24,29 @@ public class MySQLDataSourceFactory extends DaoFactory {
     ProductDaoMySqlImpl productDaoMySqlImpl;
     CartDaoMySqlImpl cartDaoMySqlImpl;
     OrderDaoMySqlImpl orderDaoMySqlImpl;
-    MysqlConnectionPoolDataSource dataSource;
-//    Connection conn;
-
-//    public DataSource simpleDataSource() {
-//        final SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-//        dataSource.setDriverClass(Driver.class);
-//        dataSource.setUrl(env.getProperty("db.url"));
-//        dataSource.setUsername(env.getProperty("db.username"));
-//        dataSource.setPassword(env.getProperty("db.password"));
-//        return dataSource;
-//    }
+    DataSource dataSource;
+    Connection conn;
+    ResourceBundle config;
 
     public MySQLDataSourceFactory(){
-        Properties props = new Properties();
-        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
-        try ( FileInputStream fis = new FileInputStream("db.properties")) {
-            props.load(fis);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Context ctx = null;
+        ResourceBundle config = ResourceBundle.getBundle("db");
         try {
-            Class.forName(props.getProperty("driverClassName")).newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        logger.debug("Connecting...");
-        try {
-            dataSource.setUrl(props.getProperty("url"));
-            dataSource.setDatabaseName(props.getProperty("dbName"));
-            dataSource.setUser(props.getProperty("usr"));
-            dataSource.setPassword(props.getProperty("password"));
-            dataSource.setAutoReconnect(true);
-            this.dataSource = dataSource;
-        } catch (SQLException e) {
+            ctx = new InitialContext();
+            dataSource = (DataSource)ctx.lookup("java:comp/env/jdbc/" + config.getString("dbName"));
+        } catch (NamingException e) {
             e.printStackTrace();
         }
     }
 
     private Connection getConnection(){
-        Connection conn = null;
+        logger.debug("Connecting...");
         try {
-            conn = dataSource.getPooledConnection().getConnection();
+            conn = dataSource.getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        logger.debug("Connection obtained");
+        logger.debug("Connection obtained: " + conn.toString());
         return conn;
     }
 
@@ -99,33 +74,37 @@ public class MySQLDataSourceFactory extends DaoFactory {
         if (userDao != null) {
             userDao = null;
         }
+        closeConnection();
     }
 
     public void deleteProductDao(ProductDao productDao) {
         if (productDao != null) {
             productDao = null;
         }
+        closeConnection();
     }
 
     public void deleteCartDao(CartDao cartDao) {
         if (cartDao != null) {
             cartDao = null;
         }
+        closeConnection();
     }
 
     public void deleteOrderDao(OrderDao orderDao) {
         if (orderDao != null) {
             orderDao = null;
         }
+        closeConnection();
     }
 
-    public void closeConnection() {
-//        try {
-//            if (conn != null)
-//                conn.close();
-//            logger.debug("Connection to DB was closed");
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+    private void closeConnection() {
+        try {
+            if (conn != null)
+                conn.close();
+            logger.debug("Connection to DB was closed");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

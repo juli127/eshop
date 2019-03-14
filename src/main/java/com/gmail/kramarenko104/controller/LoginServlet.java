@@ -145,10 +145,4 @@ public class LoginServlet extends HttpServlet {
             resp.sendRedirect(viewToGo);
         }
     }
-
-    @Override
-    public void destroy() {
-        daoFactory.closeConnection();
-    }
-
 }

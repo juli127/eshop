@@ -33,5 +33,4 @@ public abstract class DaoFactory {
     public abstract void deleteCartDao(CartDao cartDao);
     public abstract void deleteOrderDao(OrderDao orderDao);
 
-    public abstract void closeConnection();
 }

@@ -109,9 +109,4 @@ public class CartServlet extends HttpServlet {
             daoFactory.deleteCartDao(cartDao);
         }
     }
-
-    @Override
-    public void destroy() {
-        daoFactory.closeConnection();
-    }
 }
