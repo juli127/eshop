@@ -1,25 +1,20 @@
 package com.gmail.kramarenko104.factoryDao;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
+
 import com.gmail.kramarenko104.dao.*;
-import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
-import com.mysql.cj.jdbc.MysqlDataSource;
 import org.apache.log4j.Logger;
-import java.sql.*;
+
 import java.util.ResourceBundle;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.*;
 
-public class MySQLDataSourceFactory extends DaoFactory {
+public class MySqlDataSourceFactory extends DaoFactory {
 
-    private static Logger logger = Logger.getLogger(MySQLDataSourceFactory.class);
+    private static Logger logger = Logger.getLogger(MySqlDataSourceFactory.class);
     UserDaoMySqlImpl userDaoMySqlImpl;
     ProductDaoMySqlImpl productDaoMySqlImpl;
     CartDaoMySqlImpl cartDaoMySqlImpl;
@@ -28,7 +23,7 @@ public class MySQLDataSourceFactory extends DaoFactory {
     Connection conn;
     ResourceBundle config;
 
-    public MySQLDataSourceFactory(){
+    public MySqlDataSourceFactory(){
         Context ctx = null;
         ResourceBundle config = ResourceBundle.getBundle("db");
         try {
