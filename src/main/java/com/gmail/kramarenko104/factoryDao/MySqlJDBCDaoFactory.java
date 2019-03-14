@@ -31,7 +31,6 @@ public class MySqlJDBCDaoFactory extends DaoFactory {
         try {
             StringBuilder connStr = new StringBuilder();
             connStr.append(config.getString("url"))
-                    .append("/").append(config.getString("dbName"))
                     .append("?").append("user=").append(config.getString("username"))
                     .append("&password=").append(config.getString("password"));
             logger.debug("Connection string:" + connStr.toString());

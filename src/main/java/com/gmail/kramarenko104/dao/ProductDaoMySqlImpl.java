@@ -1,6 +1,5 @@
 package com.gmail.kramarenko104.dao;
 
-import com.gmail.kramarenko104.factoryDao.MySqlDaoFactory;
 import com.gmail.kramarenko104.model.Product;
 import org.apache.log4j.Logger;
 

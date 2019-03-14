@@ -2,7 +2,6 @@ package com.gmail.kramarenko104.dao;
 
 import com.gmail.kramarenko104.model.User;
 import org.apache.log4j.Logger;
-
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

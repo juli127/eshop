@@ -43,7 +43,7 @@ public class RunApp {
         }
 
         products.forEach(e -> System.out.println(e));
-        daoFactory.closeConnection();
+        daoFactory.deleteProductDao(productDao);
 
 //        UserDao userDao = daoFactory.getUserDao();
 //        User user = new User();

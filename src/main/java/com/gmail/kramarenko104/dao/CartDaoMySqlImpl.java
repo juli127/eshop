@@ -3,7 +3,6 @@ package com.gmail.kramarenko104.dao;
 import com.gmail.kramarenko104.model.Cart;
 import com.gmail.kramarenko104.model.Product;
 import org.apache.log4j.Logger;
-
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
