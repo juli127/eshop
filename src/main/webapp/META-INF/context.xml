@@ -1,7 +1,13 @@
 <Context>
-<Resource name="jdbc/eshopdb" auth="Container" type="javax.sql.DataSource"
+<Resource name="jdbc/eshopdb"
+          description="DB Connection"
+          auth="Container"
+          type="javax.sql.DataSource"
           driverClassName="com.mysql.jdbc.Driver"
           url="jdbc:mysql://localhost:3306/eshopdb"
-          username="julia" password="julia"
-          maxActive="50" maxIdle="30" maxWait="-1" />
+          username="julia"
+          password="julia"
+          maxActive="50"
+          maxIdle="30"
+          maxWait="-1" />
 </Context>

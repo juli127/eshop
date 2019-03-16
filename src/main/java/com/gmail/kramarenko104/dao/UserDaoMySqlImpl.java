@@ -15,6 +15,7 @@ public class UserDaoMySqlImpl implements UserDao {
     private static final String CREATE_USER = "INSERT INTO users(login, password, name, address, comment) VALUES(?,?,?,?,?);";
     private static final String GET_USER_BY_ID = "SELECT * FROM users WHERE id = ?);";
     private static final String GET_ALL_USERS = "SELECT * FROM users;";
+    private final static String DELETE_USER = "DELETE FROM users WHERE id = ?;";
     private static final String GET_USER_BY_LOGIN = "SELECT * FROM users WHERE login = ?";
     private static final String SALT = "34Ru9k";
     private Connection conn;
@@ -39,6 +40,11 @@ public class UserDaoMySqlImpl implements UserDao {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
         return false;
     }
@@ -86,8 +92,6 @@ public class UserDaoMySqlImpl implements UserDao {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeResultSet(rs);
         }
         return user;
     }
@@ -110,15 +114,6 @@ public class UserDaoMySqlImpl implements UserDao {
         return user;
     }
 
-    private void closeResultSet(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException ex) {
-            }
-        }
-    }
-
     public static String hashString(String hash) {
         MessageDigest md5 = null;
         try {
@@ -131,13 +126,14 @@ public class UserDaoMySqlImpl implements UserDao {
     }
 
     @Override
-    public User editUser(int id, User user) {
-        return null;
-    }
-
-    @Override
     public boolean deleteUser(int id) {
+        try (PreparedStatement pst = conn.prepareStatement(DELETE_USER)) {
+            pst.setInt(1, id);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
-
 }

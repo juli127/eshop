@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class MySqlJDBCDaoFactory extends DaoFactory {
@@ -14,10 +15,16 @@ public class MySqlJDBCDaoFactory extends DaoFactory {
     ProductDaoMySqlImpl productDaoMySqlImpl;
     CartDaoMySqlImpl cartDaoMySqlImpl;
     OrderDaoMySqlImpl orderDaoMySqlImpl;
+    String connStr;
     Connection conn;
 
     public MySqlJDBCDaoFactory() {
-        ResourceBundle config = ResourceBundle.getBundle("db");
+        ResourceBundle config = null;
+        try {
+            config = ResourceBundle.getBundle("dbconfig");
+        } catch (MissingResourceException e) {
+            e.printStackTrace();
+        }
         try {
             Class.forName(config.getString("driverClassName")).newInstance();
         } catch (InstantiationException e) {
@@ -27,22 +34,29 @@ public class MySqlJDBCDaoFactory extends DaoFactory {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        logger.debug("Connecting...");
+        connStr = new StringBuilder().append(config.getString("url"))
+                .append("?").append("user=").append(config.getString("username"))
+                .append("&password=").append(config.getString("password")).toString();
+    }
+
+    @Override
+    public void openConnection() {
         try {
-            StringBuilder connStr = new StringBuilder();
-            connStr.append(config.getString("url"))
-                    .append("?").append("user=").append(config.getString("username"))
-                    .append("&password=").append(config.getString("password"));
-            logger.debug("Connection string:" + connStr.toString());
+            conn = DriverManager.getConnection(connStr);
+            logger.debug("Connection obtained: " + conn);
+        } catch (SQLException e) {
+            logger.debug("Connection failed. SQLException: " + e.getMessage());
+        }
+    }
 
-            conn = DriverManager.getConnection(connStr.toString());
-            logger.debug("Connection obtained");
-
-        } catch (SQLException ex) {
-            logger.debug("Connection to DB failed...");
-            logger.debug("SQLException: " + ex.getMessage());
-            logger.debug("SQLState: " + ex.getSQLState());
-            logger.debug("VendorError: " + ex.getErrorCode());
+    @Override
+    public void closeConnection() {
+        try {
+            if (conn != null)
+                conn.close();
+            logger.debug("Connection to db is closed");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -75,7 +89,6 @@ public class MySqlJDBCDaoFactory extends DaoFactory {
         if (userDao != null) {
             userDao = null;
         }
-        closeConnection();
     }
 
     @Override
@@ -83,7 +96,6 @@ public class MySqlJDBCDaoFactory extends DaoFactory {
         if (productDao != null) {
             productDao = null;
         }
-        closeConnection();
     }
 
     @Override
@@ -91,24 +103,12 @@ public class MySqlJDBCDaoFactory extends DaoFactory {
         if (cartDao != null) {
             cartDao = null;
         }
-        closeConnection();
     }
 
     @Override
     public void deleteOrderDao(OrderDao orderDao) {
         if (orderDao != null) {
             orderDao = null;
-        }
-        closeConnection();
-    }
-
-    private void closeConnection() {
-        try {
-            if (conn != null)
-                conn.close();
-            logger.debug("Connection to DB was closed");
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 }

@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 public abstract class DaoFactory {
 
 	public static DaoFactory getSpecificDao(){
-		ResourceBundle config = ResourceBundle.getBundle("db");
+		ResourceBundle config = ResourceBundle.getBundle("dbconfig");
 		DaoFactory daoFactory = null;
 		try {
 			daoFactory = (DaoFactory) Class.forName(config.getString("factoryClass")).newInstance();
@@ -22,6 +22,9 @@ public abstract class DaoFactory {
 		}
 		return daoFactory;
 	}
+
+    public abstract void openConnection();
+    public abstract void closeConnection();
 
     public abstract UserDao getUserDao();
     public abstract ProductDao getProductDao();

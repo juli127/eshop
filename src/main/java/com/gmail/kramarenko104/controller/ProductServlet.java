@@ -29,8 +29,9 @@ public class ProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
+        daoFactory.openConnection();
 
-        // prepare products list to show depending on selected category
+        // prepare products list depending on selected category
         ProductDao productDao = daoFactory.getProductDao();
         String selectedCateg = req.getParameter("selectedCategory");
         List<Product> products;
@@ -63,10 +64,7 @@ public class ProductServlet extends HttpServlet {
                 daoFactory.deleteCartDao(cartDao);
             }
         }
+        daoFactory.closeConnection();
         req.getRequestDispatcher("/WEB-INF/view/products.jsp").forward(req, resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     }
 }

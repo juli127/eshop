@@ -2,24 +2,17 @@ package com.gmail.kramarenko104.dao;
 
 import com.gmail.kramarenko104.model.Product;
 import org.apache.log4j.Logger;
-
-import java.io.FileInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoMySqlImpl implements ProductDao {
-    /*  private int id;
-   private String name;
-   private int category;
-   private int price;
-   private String description;
-   private File image;
-*/
+
     private static Logger logger = Logger.getLogger(ProductDaoMySqlImpl.class);
     private final static String GET_ALL_PRODUCTS = "SELECT * FROM products;";
     private final static String GET_PRODUCT_BY_ID = "SELECT * FROM products WHERE id = ?;";
     private final static String GET_PRODUCTS_BY_CATEGORY = "SELECT * FROM products WHERE category = ?;";
+    private final static String DELETE_PRODUCT = "DELETE FROM products WHERE id = ?;";
     private Connection conn;
     private List<Product> allProductsList;
 
@@ -45,8 +38,6 @@ public class ProductDaoMySqlImpl implements ProductDao {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            closeResultSet(rs);
         }
         return product;
     }
@@ -62,7 +53,6 @@ public class ProductDaoMySqlImpl implements ProductDao {
 
     @Override
     public List<Product> getAllProducts() {
-     //   logger.debug("ProductDao:getAllProducts: enter... " );
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(GET_ALL_PRODUCTS)) {
             while (rs.next()) {
@@ -73,7 +63,6 @@ public class ProductDaoMySqlImpl implements ProductDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //logger.debug("ProductDao:getAllProducts: return = " + allProductsList);
         return allProductsList;
     }
 
@@ -92,28 +81,19 @@ public class ProductDaoMySqlImpl implements ProductDao {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            closeResultSet(rs);
         }
         return productsList;
     }
 
     @Override
-    public Product editProduct(int productId, Product user) {
-        return null;
-    }
-
-    @Override
     public boolean deleteProduct(int productId) {
-        return false;
-    }
-
-    private void closeResultSet(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException ex) {
-            }
+        try (PreparedStatement pst = conn.prepareStatement(DELETE_PRODUCT)) {
+            pst.setInt(1, productId);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return false;
     }
 }

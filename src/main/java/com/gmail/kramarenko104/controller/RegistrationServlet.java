@@ -34,6 +34,8 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
+        daoFactory.openConnection();
+
         StringBuilder message = new StringBuilder();
         Map<String, String> errors = new HashMap<>();
         StringBuilder errorsMsg = new StringBuilder();
@@ -53,7 +55,7 @@ public class RegistrationServlet extends HttpServlet {
                 UserDao userDao = daoFactory.getUserDao();
                 userExist = (userDao.getUserByLogin(login) != null);
 
-                // user with this login/password not registered yet
+                // user with this login/password wasn't registered yet
                 if (!userExist) {
                     logger.debug("RegisrtServlet: user with entered login wasn't registered yet");
                     Map<String, String> regData = new HashMap<>();
@@ -140,5 +142,6 @@ public class RegistrationServlet extends HttpServlet {
                 }
             }
         }
+        daoFactory.closeConnection();
     }
 }

@@ -7,11 +7,6 @@ import java.util.Map;
 
 public interface OrderDao {
 
-    Order getOrder(int orderNumber);
-
-    void deleteAllOrders(int userId);
-
-    List<Order> getAllOrders (int userId);
-
+    boolean deleteAllOrders(int userId);
     Order createOrder(int userId, Map<Product, Integer> products);
 }

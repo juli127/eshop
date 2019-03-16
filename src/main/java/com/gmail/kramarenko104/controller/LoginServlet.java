@@ -41,9 +41,9 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
+        daoFactory.openConnection();
         boolean showLoginForm = true;
         boolean accessGranted = false;
-        UserDao userDao = daoFactory.getUserDao();
         StringBuilder msgText = new StringBuilder();
         boolean isAdmin = false;
         User currentUser = null;
@@ -65,6 +65,7 @@ public class LoginServlet extends HttpServlet {
 
                 if ((login != null) && !("".equals(login))) {
                     session.setAttribute("login", login);
+                    UserDao userDao = daoFactory.getUserDao();
                     currentUser = userDao.getUserByLogin(login);
                     boolean exist = (currentUser != null);
 
@@ -81,9 +82,6 @@ public class LoginServlet extends HttpServlet {
                             logger.debug("LoginServlet: User " + currentUser.getName() + " was registered and passed autorization");
                             if (adminLog.equals(login) && userDao.getUserByLogin(adminLog).getPassword().equals(passVerif)){
                                 isAdmin = true;
-                                logger.debug("LoginServlet: it's admin");
-                            } else {
-                                logger.debug("LoginServlet: it's NOT admin");
                             }
                         } else {
                             attempt++;
@@ -108,12 +106,13 @@ public class LoginServlet extends HttpServlet {
                         showLoginForm = false;
                         msgText.append("<br>This user wasn't registered yet. <a href='registration'>Register, please,</a> or <a href='login'>login</a>");
                     }
+                    daoFactory.deleteUserDao(userDao);
                 } else {
                     attempt = 0;
                 }
             }
         }
-        // for authorized user get corresponding shopping Cart
+        // for authorized user get the corresponding shopping Cart
         if (accessGranted) {
             CartDao cartDao = daoFactory.getCartDao();
             showLoginForm = false;
@@ -133,11 +132,12 @@ public class LoginServlet extends HttpServlet {
             daoFactory.deleteCartDao(cartDao);
         }
 
+        daoFactory.closeConnection();
+
         session.setAttribute("showLoginForm", showLoginForm);
         session.setAttribute("message", msgText.toString());
         session.setAttribute("attempt", attempt);
         session.setAttribute("isAdmin", isAdmin);
-        daoFactory.deleteUserDao(userDao);
 
         if ("WEB-INF/view/login.jsp".equals(viewToGo)){
             req.getRequestDispatcher(viewToGo).forward(req, resp);

@@ -31,7 +31,6 @@ public class RunApp {
 
         DaoFactory daoFactory = DaoFactory.getSpecificDao();
         ProductDao productDao = daoFactory.getProductDao();
-////        req.setAttribute("categories", productDao.getCategoriesList());
         String selectedCateg = "3";
         List<Product> products;
 

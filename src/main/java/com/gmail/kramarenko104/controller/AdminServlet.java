@@ -27,15 +27,13 @@ public class AdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         if (session != null) {
+            daoFactory.openConnection();
             UserDao userDao = daoFactory.getUserDao();
             List<User> usersList = userDao.getAllUsers();
             session.setAttribute("usersList", usersList);
             daoFactory.deleteUserDao(userDao);
+            daoFactory.closeConnection();
         }
-            req.getRequestDispatcher("WEB-INF/view/admin.jsp").forward(req, resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("WEB-INF/view/admin.jsp").forward(req, resp);
     }
 }
