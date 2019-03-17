@@ -16,7 +16,7 @@ public abstract class DaoFactory {
     public abstract void openConnection();
 
     public static DaoFactory getSpecificDao(){
-        ResourceBundle config = ResourceBundle.getBundle("dbconfig");
+        ResourceBundle config = ResourceBundle.getBundle("application");
         DaoFactory daoFactory = null;
         try {
             daoFactory = (DaoFactory) Class.forName(config.getString("factoryClass")).newInstance();

@@ -15,7 +15,7 @@ public class MySqlJDBCDaoFactory extends DaoFactory {
     public MySqlJDBCDaoFactory() {
         ResourceBundle config = null;
         try {
-            config = ResourceBundle.getBundle("dbconfig");
+            config = ResourceBundle.getBundle("jdbc");
         } catch (MissingResourceException e) {
             e.printStackTrace();
         }

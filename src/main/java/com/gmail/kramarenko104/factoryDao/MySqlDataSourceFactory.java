@@ -16,7 +16,7 @@ public class MySqlDataSourceFactory extends DaoFactory {
         if (dataSource == null) {
             ResourceBundle config = null;
             try {
-                config = ResourceBundle.getBundle("dbconfig");
+                config = ResourceBundle.getBundle("jdbc");
             } catch (MissingResourceException e) {
                 e.printStackTrace();
             }
