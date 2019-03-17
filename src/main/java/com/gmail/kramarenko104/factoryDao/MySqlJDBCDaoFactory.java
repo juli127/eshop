@@ -11,12 +11,12 @@ import java.util.ResourceBundle;
 public class MySqlJDBCDaoFactory extends DaoFactory {
 
     private static Logger logger = Logger.getLogger(MySqlJDBCDaoFactory.class);
-    UserDaoMySqlImpl userDaoMySqlImpl;
-    ProductDaoMySqlImpl productDaoMySqlImpl;
-    CartDaoMySqlImpl cartDaoMySqlImpl;
-    OrderDaoMySqlImpl orderDaoMySqlImpl;
-    String connStr;
-    Connection conn;
+    private UserDaoMySqlImpl userDaoMySqlImpl;
+    private ProductDaoMySqlImpl productDaoMySqlImpl;
+    private CartDaoMySqlImpl cartDaoMySqlImpl;
+    private OrderDaoMySqlImpl orderDaoMySqlImpl;
+    private String connStr;
+    private Connection conn;
 
     public MySqlJDBCDaoFactory() {
         ResourceBundle config = null;

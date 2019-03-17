@@ -1,7 +1,5 @@
 package com.gmail.kramarenko104.factoryDao;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import com.gmail.kramarenko104.dao.*;
 import org.apache.log4j.Logger;
 import java.util.MissingResourceException;
@@ -9,17 +7,19 @@ import java.util.ResourceBundle;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.sql.DataSource;
 
 public class MySqlDataSourceFactory extends DaoFactory {
 
     private static Logger logger = Logger.getLogger(MySqlDataSourceFactory.class);
-    UserDaoMySqlImpl userDaoMySqlImpl;
-    ProductDaoMySqlImpl productDaoMySqlImpl;
-    CartDaoMySqlImpl cartDaoMySqlImpl;
-    OrderDaoMySqlImpl orderDaoMySqlImpl;
-    DataSource dataSource;
-    Connection conn;
+    private UserDaoMySqlImpl userDaoMySqlImpl;
+    private ProductDaoMySqlImpl productDaoMySqlImpl;
+    private CartDaoMySqlImpl cartDaoMySqlImpl;
+    private OrderDaoMySqlImpl orderDaoMySqlImpl;
+    private DataSource dataSource;
+    private Connection conn;
 
     public MySqlDataSourceFactory(){
         Context ctx = null;
