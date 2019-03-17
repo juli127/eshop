@@ -1,4 +1,5 @@
 **E-shop webapp based on servlets + JSP, JSTL + Ajax:**
+
 Were used:
 - MySQL Server 5.7.23
 - Apache Commons DBCP 2.6.0
