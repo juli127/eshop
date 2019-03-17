@@ -1,5 +1,13 @@
 **E-shop webapp based on servlets + JSP, JSTL + Ajax:**
-- There is possibility to connect to db using DataSource with Connection Pool or JDBC (choosing 'factoryClass' value in dbconfig.properties);
+Were used:
+- MySQL Server 5.7.23
+- Apache Commons DBCP 2.6.0
+- MySQL Connector/J 8.0.13
+- JSTL 1.2
+- Gson 2.8.5
+
+**Functionality:**
+- There is possibility to connect to db using Apache Commons DBCP or JDBC (choosing 'factoryClass' value in dbconfig.properties);
 - Not authorized user can see, choose any product but cannot buy them, notification to register or login is shown (screenshots/MainPageWithAllProducts.png);
 - User can see products of all categories ("All categories" bookmark) or selected products by specific category (click on picture with desired category on the left panel);
 - If user was registered before and try to register again, he/she will be resend to login page for login;

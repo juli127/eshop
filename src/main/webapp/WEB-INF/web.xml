@@ -20,10 +20,4 @@
         <url-pattern>/static/*</url-pattern>
     </servlet-mapping>
 
-    <resource-ref>
-        <res-ref-name>jdbc/eshopdb</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
-
 </web-app>
