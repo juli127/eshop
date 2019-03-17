@@ -1,4 +1,4 @@
-**E-shop webapp based on servlets + JSP + Ajax:**
+**E-shop webapp based on servlets + JSP, JSTL + Ajax:**
 - There is possibility to connect to db using DataSource with Database Connection Pool or JDBC (choosing 'factoryClass' value in dbconfig.properties);
 - Not authorized user can see, choose any product but cannot buy them, notification to register or login is shown (screenshots/MainPageWithAllProducts.png);
 - User can see products of all categories ("All categories" bookmark) or selected products by specific category (click on picture with desired category on the left panel);
