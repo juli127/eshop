@@ -8,7 +8,7 @@ Were used:
 - Gson 2.8.5
 
 **Functionality:**
-- There is possibility to connect to db using Apache Commons DBCP or JDBC (choosing 'factoryClass' value in dbconfig.properties);
+- There is possibility to connect to db using Apache Commons DBCP or JDBC (choosing 'factoryClass' value in resources/application.properties);
 - Not authorized user can see, choose any product but cannot buy them, notification to register or login is shown (screenshots/MainPageWithAllProducts.png);
 - User can see products of all categories ("All categories" bookmark) or selected products by specific category (click on picture with desired category on the left panel);
 - If user was registered before and try to register again, he/she will be resend to login page for login;
