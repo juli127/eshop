@@ -5,15 +5,30 @@
 
 -- Database: `eshopdb`
 -- --------------------------------------------------------
-
--- Table structure for table `carts`
+--
+-- Table structure for table `users`
 --
 
-CREATE TABLE `carts` (
-  `userId` int(11) DEFAULT NULL,
-  `productId` int(11) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `login` varchar(40) NOT NULL,
+  `password` varchar(80) NOT NULL,
+  `name` varchar(30) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `comment` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `login`, `password`, `name`, `address`, `comment`) VALUES
+(4, 'admin', '1e8949373cf0dc044b49c9dd3ddd1835', 'Alexander', 'Odessa', 'admin'),
+(5, 'lex@gmail.com', '-5039f9f6cecff39cf359c1de1fbc2b7f', 'Alex', 'Kiev', 'call before delivery'),
+(6, 'mash198@ukr.net', '53df562cd13c57455c2c1bbe1854458f', 'Maria', 'Lviv', 'don\'t call'),
+(9, 'julia@gmail.com', '-63d66444ee4a31da4af4872610e66a14', 'Julia', 'Kiev', 'don\'t call'),
+(10, 'serg@ukr.net', '-63d66444ee4a31da4af4872610e66a14', 'Serg Kovalenko', 'Kiev, Zdolbunovskogo str., 38', '-'),
+(14, 't@test.com', '-63d66444ee4a31da4af4872610e66a14', 'test', 'kiev', '');
 
 -- --------------------------------------------------------
 
@@ -65,30 +80,23 @@ INSERT INTO `products` (`id`, `name`, `category`, `price`, `description`, `image
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `users`
+-- Table structure for table `carts`
 --
 
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `login` varchar(40) NOT NULL,
-  `password` varchar(80) NOT NULL,
-  `name` varchar(30) DEFAULT NULL,
-  `address` varchar(50) DEFAULT NULL,
-  `comment` varchar(100) DEFAULT NULL
+CREATE TABLE `carts` (
+  `userId` int(11) DEFAULT NULL,
+  `productId` int(11) DEFAULT NULL,
+  `quantity` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `users`
+-- Dumping data for table `carts`
 --
 
-INSERT INTO `users` (`id`, `login`, `password`, `name`, `address`, `comment`) VALUES
-(4, 'admin', '1e8949373cf0dc044b49c9dd3ddd1835', 'Alexander', 'Odessa', 'admin'),
-(5, 'lex@gmail.com', '-5039f9f6cecff39cf359c1de1fbc2b7f', 'Alex', 'Kiev', 'call before delivery'),
-(6, 'mash198@ukr.net', '53df562cd13c57455c2c1bbe1854458f', 'Maria', 'Lviv', 'don\'t call'),
-(9, 'julia@gmail.com', '-63d66444ee4a31da4af4872610e66a14', 'Julia', 'Kiev', 'don\'t call'),
-(10, 'serg@ukr.net', '-63d66444ee4a31da4af4872610e66a14', 'Serg Kovalenko', 'Kiev, Zdolbunovskogo str., 38', '-'),
-(14, 't@test.com', '-63d66444ee4a31da4af4872610e66a14', 'test', 'kiev', '');
+INSERT INTO `carts` (`userId`, `productId`, `quantity`) VALUES
+(4, 1, 3),
+(4, 5, 1),
+(4, 4, 2);
 
 -- --------------------------------------------------------
 --
