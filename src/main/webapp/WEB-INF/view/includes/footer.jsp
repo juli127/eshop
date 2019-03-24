@@ -4,7 +4,7 @@
 <%--</p>--%>
 
 <br><br>
-<div orderNumber="footer" class="footer">
+<div id="footer" class="footer">
     <p>Copyright (c) by Kramarenko Iuliia</p>
 </div>
 
