@@ -12,16 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 
-public class MyFilter implements Filter {
+public class AdminFilter implements Filter {
 
-    private FilterConfig config = null;
-    private static Logger logger = Logger.getLogger(MyFilter.class);
+    private static Logger logger = Logger.getLogger(AdminFilter.class);
 
-    public MyFilter() {
+    public AdminFilter() {
     }
 
-    public void init(FilterConfig fConfig) throws ServletException {
-        this.config = config;
+    @Override
+    public void init(FilterConfig filterConfig) {
     }
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {

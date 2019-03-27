@@ -6,12 +6,12 @@
     <display-name></display-name>
 
     <filter>
-        <filter-name>MyFilter</filter-name>
-        <filter-class>com.gmail.kramarenko104.filter.MyFilter</filter-class>
+        <filter-name>AdminFilter</filter-name>
+        <filter-class>com.gmail.kramarenko104.filter.AdminFilter</filter-class>
     </filter>
 
     <filter-mapping>
-        <filter-name>MyFilter</filter-name>
+        <filter-name>AdminFilter</filter-name>
         <url-pattern>/admin</url-pattern>
     </filter-mapping>
 

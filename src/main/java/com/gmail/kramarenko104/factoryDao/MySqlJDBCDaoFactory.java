@@ -34,14 +34,16 @@ public class MySqlJDBCDaoFactory extends DaoFactory {
     }
 
     @Override
-    public void openConnection() {
+    public boolean openConnection() {
         try {
             Connection conn = DriverManager.getConnection(connStr);
             super.setConnection(conn);
             logger.debug("Connection obtained");
+            return true;
         } catch (SQLException e) {
             logger.debug("Connection failed. SQLException: " + e.getMessage());
         }
+        return false;
     }
 
     @Override

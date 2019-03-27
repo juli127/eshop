@@ -17,22 +17,26 @@ import java.util.List;
 public class AdminServlet extends HttpServlet {
 
     private static Logger logger = Logger.getLogger(LoginServlet.class);
+    private static final String DB_WARNING = "Check your connection to DB!";
     private DaoFactory daoFactory;
 
-    public AdminServlet() throws ServletException, IOException {
+    public AdminServlet() {
         daoFactory = DaoFactory.getSpecificDao();
     }
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         if (session != null) {
-            daoFactory.openConnection();
-            UserDao userDao = daoFactory.getUserDao();
-            List<User> usersList = userDao.getAllUsers();
-            session.setAttribute("usersList", usersList);
-            daoFactory.deleteUserDao(userDao);
-            daoFactory.closeConnection();
+            if (daoFactory.openConnection()) {
+                UserDao userDao = daoFactory.getUserDao();
+                List<User> usersList = userDao.getAllUsers();
+                session.setAttribute("usersList", usersList);
+                daoFactory.deleteUserDao(userDao);
+                daoFactory.closeConnection();
+            } else {
+                session.setAttribute("warning", DB_WARNING);
+            }
         }
         req.getRequestDispatcher("WEB-INF/view/admin.jsp").forward(req, resp);
     }

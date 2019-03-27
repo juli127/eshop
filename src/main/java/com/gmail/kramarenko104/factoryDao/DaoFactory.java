@@ -13,7 +13,7 @@ public abstract class DaoFactory {
     private OrderDaoMySqlImpl orderDaoMySqlImpl;
     private Connection conn;
 
-    public abstract void openConnection();
+    public abstract boolean openConnection();
 
     public static DaoFactory getSpecificDao(){
         ResourceBundle config = ResourceBundle.getBundle("application");

@@ -33,14 +33,16 @@ public class MySqlDataSourceFactory extends DaoFactory {
     }
 
     @Override
-    public void openConnection() {
+    public boolean openConnection() {
         try {
             Connection conn = dataSource.getConnection();
             super.setConnection(conn);
             logger.debug("Connection obtained...");
+            return true;
         } catch (SQLException e) {
             logger.debug("Connection failed. SQLException: " + e.getMessage());
         }
+        return false;
     }
 
     @Override

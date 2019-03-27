@@ -20,6 +20,7 @@ import com.gmail.kramarenko104.model.Product;
 public class ProductServlet extends HttpServlet {
 
     private static Logger logger = Logger.getLogger(ProductServlet.class);
+    private static final String DB_WARNING = "Check your connection to DB!";
     private DaoFactory daoFactory;
 
     public ProductServlet() {
@@ -29,42 +30,45 @@ public class ProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        daoFactory.openConnection();
 
-        // prepare products list depending on selected category
-        ProductDao productDao = daoFactory.getProductDao();
-        String selectedCateg = req.getParameter("selectedCategory");
-        List<Product> products;
+        if (daoFactory.openConnection()) {
+            // prepare products list depending on selected category
+            ProductDao productDao = daoFactory.getProductDao();
+            String selectedCateg = req.getParameter("selectedCategory");
+            List<Product> products;
 
-        // when form is opened at the first time, selectedCateg == null
-        if (selectedCateg != null) {
-            products = productDao.getProductsByCategory(Integer.parseInt(selectedCateg));
-        } else {
-            products = productDao.getAllProducts();
-        }
-        session.setAttribute("selectedCateg", selectedCateg);
-        session.setAttribute("products", products);
-        // products.forEach(e -> logger.debug(e));
-        daoFactory.deleteProductDao(productDao);
-
-        // be sure that when we enter on the main application page (products.jsp), user's info is full and correct
-        if (session.getAttribute("user") == null) {
-            session.setAttribute("userCart", null);
-        } else {
-            User currentUser = (User) session.getAttribute("user");
-            Cart userCart = null;
-            if (session.getAttribute("userCart") == null) {
-                int userId = currentUser.getId();
-                CartDao cartDao = daoFactory.getCartDao();
-                userCart = cartDao.getCart(userId);
-                if (userCart == null) {
-                    userCart = new Cart(userId);
-                }
-                session.setAttribute("userCart", userCart);
-                daoFactory.deleteCartDao(cartDao);
+            // when form is opened at the first time, selectedCateg == null
+            if (selectedCateg != null) {
+                products = productDao.getProductsByCategory(Integer.parseInt(selectedCateg));
+            } else {
+                products = productDao.getAllProducts();
             }
+            session.setAttribute("selectedCateg", selectedCateg);
+            session.setAttribute("products", products);
+            // products.forEach(e -> logger.debug(e));
+            daoFactory.deleteProductDao(productDao);
+
+            // be sure that when we enter on the main application page (products.jsp), user's info is full and correct
+            if (session.getAttribute("user") == null) {
+                session.setAttribute("userCart", null);
+            } else {
+                User currentUser = (User) session.getAttribute("user");
+                Cart userCart = null;
+                if (session.getAttribute("userCart") == null) {
+                    int userId = currentUser.getId();
+                    CartDao cartDao = daoFactory.getCartDao();
+                    userCart = cartDao.getCart(userId);
+                    if (userCart == null) {
+                        userCart = new Cart(userId);
+                    }
+                    session.setAttribute("userCart", userCart);
+                    daoFactory.deleteCartDao(cartDao);
+                }
+            }
+            daoFactory.closeConnection();
+        } else {
+            session.setAttribute("warning", DB_WARNING);
         }
-        daoFactory.closeConnection();
         req.getRequestDispatcher("/WEB-INF/view/products.jsp").forward(req, resp);
     }
 }

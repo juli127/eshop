@@ -20,6 +20,7 @@ Were used:
     - If all products are removed from the cart, table with cart products list disappears at all;
 - Press on 'make order' button creates the new order on the base of user's cart (screenshots/UserOrder.png). Shopping cart becomes empty;
 - Access to staff-only info (/admin) is made through the filter. If user has no access, forbidden info is shown (screenshots/ForbiddenResources.png);
+- If there isn't connection to DB, warning about lost of connection appears (screenshots/LostDBconnection.png);
 - db dump is located in /resources/eshopdb_dump.sql
 
 
