@@ -68,7 +68,7 @@ public class RegistrationServlet extends HttpServlet {
 
                         for (Map.Entry<String, String> entry : regData.entrySet()) {
                             if (entry.getValue() == null || entry.getValue().length() < 1) {
-                                errors.put(entry.getKey(), "Cannot be empty!");
+                                errors.put(entry.getKey(), "cannot be empty!");
                             }
                         }
                         if (repass.length() > 0 && !pass.equals(repass)) {
@@ -139,7 +139,8 @@ public class RegistrationServlet extends HttpServlet {
                     if (userExist) {
                         logger.debug("RegisrtServlet: user was already registered before, send to login page");
                         resp.sendRedirect("./login");
-                    } else {   // it's the new fresh-registered user, send user to to /products
+                    } else {
+                        // it's the new fresh-registered user, send user to /products
                         resp.sendRedirect("./products");
                     }
                 }

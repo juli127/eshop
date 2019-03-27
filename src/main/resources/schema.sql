@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS carts (
  userId INT,
  productId INT,
  quantity INT,
- PRIMARY KEY (orderNumber),
+ PRIMARY KEY (id),
  FOREIGN KEY (userId) REFERENCES users(id),
  FOREIGN KEY (productId) REFERENCES products(id));
 
