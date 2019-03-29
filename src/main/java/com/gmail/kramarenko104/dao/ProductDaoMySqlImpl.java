@@ -13,6 +13,7 @@ public class ProductDaoMySqlImpl implements ProductDao {
     private final static String GET_PRODUCT_BY_ID = "SELECT * FROM products WHERE id = ?;";
     private final static String GET_PRODUCTS_BY_CATEGORY = "SELECT * FROM products WHERE category = ?;";
     private final static String DELETE_PRODUCT = "DELETE FROM products WHERE id = ?;";
+    private final static String ADD_PRODUCT = "INSERT INTO products (name, category, price, description, image) VALUES (?,?,?,?,?);";
     private Connection conn;
     private List<Product> allProductsList;
 
@@ -23,6 +24,17 @@ public class ProductDaoMySqlImpl implements ProductDao {
 
     @Override
     public boolean addProduct(Product product) {
+        try (PreparedStatement pst = conn.prepareStatement(ADD_PRODUCT)) {
+            pst.setString(1, product.getName());
+            pst.setInt(2, product.getCategory());
+            pst.setInt(3, product.getPrice());
+            pst.setString(4, product.getDescription());
+            pst.setString(5, product.getImage());
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 

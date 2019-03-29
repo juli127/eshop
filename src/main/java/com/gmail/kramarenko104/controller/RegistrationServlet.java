@@ -117,7 +117,6 @@ public class RegistrationServlet extends HttpServlet {
                     }
                     daoFactory.deleteUserDao(userDao);
                 }
-
                 session.setAttribute("RegMessage", message.toString());
 
                 if (needRegistration) {

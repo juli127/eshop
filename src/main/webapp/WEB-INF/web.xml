@@ -15,6 +15,11 @@
         <url-pattern>/admin</url-pattern>
     </filter-mapping>
 
+    <filter-mapping>
+        <filter-name>AdminFilter</filter-name>
+        <url-pattern>/adminNewProduct</url-pattern>
+    </filter-mapping>
+
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/static/*</url-pattern>
