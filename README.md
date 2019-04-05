@@ -2,9 +2,10 @@
 
 Were used:
 - MySQL Server 5.7.23
+- Servlet API 3.1.0
+- JSTL 1.2
 - Apache Commons DBCP 2.6.0
 - MySQL Connector/J 8.0.13
-- JSTL 1.2
 - Gson 2.8.5
 
 **Functionality:**
